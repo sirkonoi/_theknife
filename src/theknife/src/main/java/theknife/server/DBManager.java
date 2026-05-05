@@ -26,17 +26,16 @@ public class DBManager {
         }
     }
 
-    public String buildQuery(String op, String[] values, String table) {
+    public String buildQuery(String op, Object[] values, String table) {
         String query = "";
-        int nValues = values.length;
         if(op.equals("viewAll")) {
             query = "SELECT * FROM " + table + ";";
         }
 
         else if(op.equals("insert")) {
             query = "INSERT INTO " + table + " VALUES (";
-            for(int i=0; i<nValues; i++) {
-                if(i==nValues-1) {
+            for(int i=0; i<values.length; i++) {
+                if(i==values.length-1) {
                     query+="?)";
                 }
                 else {
@@ -48,4 +47,11 @@ public class DBManager {
         return query;
     }
 
+    public void insert(Object[] values, String table) throws SQLException {
+        PreparedStatement statement = connection.prepareStatement(buildQuery("insert", values, table));
+        for(int i=0; i<values.length;i++) {
+            statement.setObject(i+1, values[i]);
+        }
+        statement.executeUpdate();
+    }
 }
