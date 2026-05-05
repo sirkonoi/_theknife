@@ -2,6 +2,8 @@ package theknife.server;
 
 import java.sql.*;
 
+import theknife.server.models.Password;
+
 public class UsersManager {
 
     DBManager db;

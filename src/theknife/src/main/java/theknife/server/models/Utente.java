@@ -1,7 +1,6 @@
 package theknife.server.models;
 
 import java.util.Date;
-import theknife.server.Password;
 
 public class Utente {
     

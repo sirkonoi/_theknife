@@ -1,4 +1,4 @@
-package theknife.server;
+package theknife.server.models;
 
 public class Password {
     private String encrypted;
