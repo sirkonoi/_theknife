@@ -1,9 +1,8 @@
 package theknife.server;
 
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-
+import java.io.IOException;
+import java.sql.*;
+import java.util.*;
 import theknife.server.models.*;
 
 public class RestaurantManager {
@@ -14,7 +13,38 @@ public class RestaurantManager {
     public RestaurantManager(DBManager db) {
         this.db = db;
     }
-    
+
+    public void insert(Ristorante newRistorante) throws SQLException {
+
+        Object[] values = {newRistorante.getNome(), newRistorante.getLuogo().getId(), newRistorante.getFasciaPrezzo(), newRistorante.isDelivery(), newRistorante.isPrenotazioneOnline(), newRistorante.getRistoratore()};
+        db.insert(values, columns, "ristorante");
+    }
+
+    public List<Ristorante> getRestaurantsList() throws SQLException, IOException {
+        List<Ristorante> lista = new ArrayList();
+
+        try(PreparedStatement statement = db.connection.prepareStatement("SELECT * FROM ristorante")) {
+            ResultSet rs = statement.executeQuery();
+            while(rs.next()) {
+                Luogo luogo = findLuogo(rs.getInt("luogo"));
+                Ristorante ris = new Ristorante(rs.getInt("id"), rs.getString("nome"), luogo, rs.getInt("fascia_prezzo"), rs.getBoolean("delivery"), rs.getBoolean("prenotazione_online"), rs.getInt("ristoratore")
+            );
+            lista.add(ris);
+            }
+        }
+        return lista;
+    }
+
+    public Luogo findLuogo(int id) throws SQLException, IOException {
+        PreparedStatement statement = db.connection.prepareStatement("SELECT * FROM luogo WHERE id = ?");
+        statement.setInt(1, id);
+        ResultSet rs = statement.executeQuery();
+        if(rs.next()) {
+            return new Luogo (rs.getString("indirizzo"), rs.getString("citta"), rs.getString("nazione"));
+        }
+        return null;
+    }
+
     public int insertLuogo(Luogo luogo) throws SQLException {
         Object[] values = {luogo.getNazione(), luogo.getCitta(), luogo.getCitta(), luogo.getLatitudine(), luogo.getLongitudine()};
         String[] lcolumns = {"nazione", "città", "indirizzo", "latitudine", "longitudine"};
@@ -30,11 +60,5 @@ public class RestaurantManager {
             return id;
         }
         return -1;
-    }
-
-    public void insert(Ristorante newRistorante) throws SQLException {
-
-        Object[] values = {newRistorante.getNome(), newRistorante.getLuogo().getId(), newRistorante.getFasciaPrezzo(), newRistorante.isDelivery(), newRistorante.isPrenotazioneOnline(), newRistorante.getRistoratore()};
-        db.insert(values, columns, "ristorante");
-    }
+    }    
 }

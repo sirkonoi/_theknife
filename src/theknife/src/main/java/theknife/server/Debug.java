@@ -13,7 +13,7 @@ public class Debug {
                 "Rossi",        // cognome
                 "konoi",        // username
                 Password.encrypt("ciao1234$"), //pass
-                null,           // data_nascita (facoltativa)
+                null,           // data_nascita
                 "Via Cremona 15, Milano, Italia",       // domicilio
                 "utente"        // ruolo
             };

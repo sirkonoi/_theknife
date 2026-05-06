@@ -51,16 +51,20 @@ public class Luogo {
     }
 
     public int getId() { return id;}
-    public String getIndirizzo() { return indirizzo; }
-    public String getNazione() { return nazione; }
-    public String getCitta() { return citta; }
-    public double getLatitudine() { return latitudine; }
-    public double getLongitudine() { return longitudine; }
-
     public void setId(int id) { this.id = id;}
+
+    public String getIndirizzo() { return indirizzo; }
     public void setIndirizzo(String indirizzo) { this.indirizzo = indirizzo; }
+
+    public String getNazione() { return nazione; }
     public void setNazione(String nazione) { this.nazione = nazione; }
+    
+    public String getCitta() { return citta; }
     public void setCitta(String citta) { this.citta = citta; }
+
+    public double getLatitudine() { return latitudine; }
     public void setLatitudine(double latitudine) { this.latitudine = latitudine; }
+
+    public double getLongitudine() { return longitudine; }
     public void setLongitudine(double longitudine) { this.longitudine = longitudine; }    
 }
