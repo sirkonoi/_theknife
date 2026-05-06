@@ -5,6 +5,7 @@ import java.net.*;
 
 public class Luogo {
     
+    private int id;
     private String indirizzo;
     private String nazione;
     private String citta;
@@ -49,12 +50,14 @@ public class Luogo {
         return a; //a[0] è la latitudine e a[1] è longitudine
     }
 
+    public int getId() { return id;}
     public String getIndirizzo() { return indirizzo; }
     public String getNazione() { return nazione; }
     public String getCitta() { return citta; }
     public double getLatitudine() { return latitudine; }
     public double getLongitudine() { return longitudine; }
 
+    public void setId(int id) { this.id = id;}
     public void setIndirizzo(String indirizzo) { this.indirizzo = indirizzo; }
     public void setNazione(String nazione) { this.nazione = nazione; }
     public void setCitta(String citta) { this.citta = citta; }

@@ -4,12 +4,14 @@ import java.util.Date;
 
 public class Utente {
     
+    protected int id;
     protected String nome, cognome, username;
     protected Date data_nascita;
     protected Password psw;
     protected String domicilio, ruolo;
 
-    public Utente(String nome, String cognome, String username, Password psw, Date data_nascita, String domicilio) {
+    public Utente(int id, String nome, String cognome, String username, Password psw, Date data_nascita, String domicilio) {
+        this.id = id;
         this.nome = nome;
         this.cognome = cognome;
         this.username = username;
@@ -18,6 +20,9 @@ public class Utente {
         this.domicilio = domicilio;
         this.ruolo = "utente";
     }
+
+    public int getId() { return id; }
+    public void setId(int id) { this.id = id; }
 
     public String getNome() { return nome; }
     public void setNome(String nome) { this.nome = nome; }

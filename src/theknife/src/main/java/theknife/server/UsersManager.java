@@ -2,7 +2,7 @@ package theknife.server;
 
 import java.sql.*;
 
-import theknife.server.models.Password;
+import theknife.server.models.*;
 
 public class UsersManager {
 
@@ -21,18 +21,28 @@ public class UsersManager {
         return false;
     }
 
-    public boolean login(String username, String psw) throws SQLException {
-        if(!userExists(username)) {return false;}
-        try(PreparedStatement statement = db.connection.prepareStatement("SELECT password FROM utente WHERE username = ?")) {
-            statement.setString(1, username);
-            ResultSet rs = statement.executeQuery();
-            if(rs.next()) {
-                String en_psw = rs.getString("password");
-                return psw.equals(Password.decrypt(en_psw));
+    public Utente login(String username, String psw) throws SQLException {
+        if(userExists(username)) {
+            try(PreparedStatement statement = db.connection.prepareStatement("SELECT * FROM utente WHERE username = ?")) {
+                statement.setString(1, username);
+                ResultSet rs = statement.executeQuery();
+                if(rs.next()) {
+                    String decr_psw = Password.decrypt(rs.getString("password"));
+                    if(decr_psw.equals(psw)) {
+                        if(rs.getString("ruolo").equals("utente")) {
+                            return new Utente(rs.getInt("id"), rs.getString("nome"), rs.getString("cognome"), rs.getString("username"), new Password(rs.getString("password")), rs.getDate("data_nascita"), rs.getString("domicilio"));
+                        }
+                        else {
+                            return new Ristoratore(rs.getInt("id"), rs.getString("nome"), rs.getString("cognome"), rs.getString("username"), new Password(rs.getString("password")), rs.getDate("data_nascita"), rs.getString("domicilio"));
+                        }
+                    }
+                }
             }
         }
-        return false;
+        return null;
     }
+
+
 
     public boolean userExists( String username) throws SQLException {
         try(PreparedStatement statement = db.connection.prepareStatement("SELECT 1 FROM utente WHERE username =  ?")) {

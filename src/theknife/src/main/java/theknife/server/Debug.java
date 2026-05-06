@@ -1,6 +1,5 @@
 package theknife.server;
-
-import theknife.server.models.Password;
+import theknife.server.models.*;
 
 public class Debug {
     public static void main(String[] args) {
@@ -27,16 +26,18 @@ public class Debug {
             System.out.println("Registrazione duplicata: " + (duplicate ? "OK" : "Username già esistente"));
 
             // test login corretto
-            boolean login = um.login("konoi", "ciao1234$");
-            System.out.println("Login corretto: " + (login ? "OK" : "FALLITO"));
+            Utente user = um.login("konoi", "ciao1234$");
+            System.out.println("Login corretto: " + (user != null ? "OK" : "FALLITO"));
+            System.out.println("Login corretto, ID: " + user.getId());
+
 
             // test login password sbagliata
-            boolean loginFail = um.login("mrossi", "passwordsbagliata");
-            System.out.println("Login password errata: " + (loginFail ? "OK" : "FALLITO"));
+            Utente loginFail = um.login("mrossi", "passwordsbagliata");
+            System.out.println("Login password errata: " + (loginFail != null  ? "OK" : "FALLITO"));
 
             // test login utente non esistente
-            boolean loginNotFound = um.login("inesistente", "password123");
-            System.out.println("Login utente inesistente: " + (loginNotFound ? "OK" : "FALLITO"));
+            Utente loginNotFound = um.login("inesistente", "password123");
+            System.out.println("Login utente inesistente: " + (loginNotFound != null  ? "OK" : "FALLITO"));
 
         } catch (Exception e) {
             e.printStackTrace();
