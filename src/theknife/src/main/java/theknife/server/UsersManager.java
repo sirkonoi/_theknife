@@ -7,15 +7,15 @@ import theknife.server.models.Password;
 public class UsersManager {
 
     DBManager db;
+    String[] columns = {"nome", "cognome", "username", "password", "data_nascita", "domicilio", "ruolo"};
 
     public UsersManager(DBManager db) {
         this.db = db;
     }
     
-    //possibile gestione psw da implementare
     public boolean register(Object[] values) throws SQLException {
         if(!userExists((String)values[2])) {
-            db.insert(values, "utente");
+            db.insert(values, columns, "utente");
             return true;
         }
         return false;
