@@ -15,7 +15,7 @@ public class RestaurantManager {
     }
 
     public void insert(Ristorante newRistorante) throws SQLException {
-
+        
         Object[] values = {newRistorante.getNome(), newRistorante.getLuogo().getId(), newRistorante.getFasciaPrezzo(), newRistorante.isDelivery(), newRistorante.isPrenotazioneOnline(), newRistorante.getRistoratore()};
         db.insert(values, columns, "ristorante");
     }

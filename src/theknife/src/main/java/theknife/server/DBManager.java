@@ -26,7 +26,7 @@ public class DBManager {
         }
     }
 
-    public String buildQuery(String op, Object[] values, String[] columns, String table) {
+    public synchronized String buildQuery(String op, Object[] values, String[] columns, String table) {
         String query = "";
         if(op.equals("viewAll")) {
             query = "SELECT * FROM " + table + ";";
@@ -55,7 +55,7 @@ public class DBManager {
         return query;
     }
 
-    public void insert(Object[] values,  String[] columns, String table) throws SQLException {
+    public synchronized void insert(Object[] values,  String[] columns, String table) throws SQLException {
         PreparedStatement statement = connection.prepareStatement(buildQuery("insert", values, columns, table));
         for(int i=0; i<values.length;i++) {
             statement.setObject(i+1, values[i]);
