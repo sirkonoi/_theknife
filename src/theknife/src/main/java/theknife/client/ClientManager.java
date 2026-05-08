@@ -3,6 +3,7 @@ package theknife.client;
 import java.io.*;
 import java.net.*;
 
+import theknife.Message;
 import theknife.server.ServerManager;
 
 public class ClientManager {

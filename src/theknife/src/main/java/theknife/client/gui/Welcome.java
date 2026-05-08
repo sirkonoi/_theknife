@@ -7,8 +7,8 @@ import javafx.scene.*;
 import javafx.scene.control.*;
 import javafx.scene.layout.*;
 import javafx.stage.*;
+import theknife.Message;
 import theknife.client.ClientManager;
-import theknife.client.Message;
 
 public class Welcome {
 
