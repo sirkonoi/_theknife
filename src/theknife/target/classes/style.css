@@ -1,0 +1,82 @@
+.root {
+    -fx-background-color: #1a1a1a;
+}
+
+.text-field, .password-field {
+    -fx-background-color: #2a2a2a;
+    -fx-text-fill: #f0f0f0;
+    -fx-prompt-text-fill: #888888;
+    -fx-border-color: #3a3a3a;
+    -fx-border-width: 0 0 2 0;
+    -fx-background-radius: 6;
+    -fx-font-size: 13;
+}
+
+.text-field:focused, .password-field:focused {
+    -fx-border-color: #4caf50;
+}
+
+.btn-green {
+    -fx-background-color: #4caf50;
+    -fx-text-fill: #1a1a1a;
+    -fx-font-size: 13;
+    -fx-font-weight: bold;
+    -fx-background-radius: 8;
+    -fx-cursor: hand;
+    -fx-padding: 10 0 10 0;
+}
+
+.btn-green:hover {
+    -fx-background-color: #388e3c;
+}
+
+.btn-black {
+    -fx-background-color: transparent;
+    -fx-text-fill: #4caf50;
+    -fx-font-size: 13;
+    -fx-border-color: #4caf50;
+    -fx-border-width: 1.5;
+    -fx-background-radius: 8;
+    -fx-border-radius: 8;
+    -fx-cursor: hand;
+    -fx-padding: 9 0 9 0;
+}
+
+.btn-black:hover {
+    -fx-background-color: #388e3c;
+    -fx-text-fill: #f0f0f0;
+    -fx-border-color: #388e3c;
+}
+
+.label {
+    -fx-text-fill: #f0f0f0;
+}
+
+.error-label {
+    -fx-text-fill: #e05252;
+    -fx-font-size: 12;
+}
+
+.radio-button {
+    -fx-text-fill: #f0f0f0;
+    -fx-font-size: 13;
+}
+
+.hyperlink {
+    -fx-text-fill: #4caf50;
+    -fx-border-color: transparent;
+    -fx-font-size: 12;
+}
+
+.hyperlink:hover {
+    -fx-text-fill: #388e3c;
+}
+
+.scroll-pane {
+    -fx-background: #1a1a1a;
+    -fx-background-color: #1a1a1a;
+}
+
+.scroll-pane .viewport {
+    -fx-background-color: #1a1a1a;
+}
