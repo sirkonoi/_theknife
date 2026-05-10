@@ -10,6 +10,7 @@ import javafx.stage.*;
 import theknife.Message;
 import theknife.client.ClientManager;
 import theknife.server.models.Password;
+import theknife.server.models.Utente;
 
 public class Welcome {
 
@@ -148,8 +149,7 @@ public class Welcome {
             if (user.isEmpty() || psw.isEmpty()) { showError(err, "Tutti i campi devono essere completati."); return; }
             try {
                 Message res = client.send(new Message("login", new Object[]{user, psw}));
-                if (res.getOp().equals("OK")) {
-                    //vai home
+                if (res.getOp().equals("OK")) {                
                 } else {
                     showError(err, "Credenziali errate. Riprova.");
                     passwordField.clear();

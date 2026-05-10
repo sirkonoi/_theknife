@@ -20,6 +20,14 @@ public class Luogo {
         latitudine = tmp[0];
         longitudine = tmp[1];
     }
+
+    public Luogo(String indirizzo, String citta, String nazione, double latitudine, double longitudine) {
+        this.indirizzo = indirizzo;
+        this.citta = citta;
+        this.nazione = nazione;
+        this.latitudine = latitudine;
+        this.longitudine = longitudine;        
+    }
   
     public static double[] getLatitudineLongitudine(String indirizzo) throws IOException {
         String urlString = "https://nominatim.openstreetmap.org/search?q=" + indirizzo.replace(" ", "+")
