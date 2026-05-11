@@ -4,21 +4,13 @@ import java.io.IOException;
 import javafx.geometry.*;
 import javafx.scene.*;
 import javafx.scene.control.*;
-import javafx.scene.image.*;
 import javafx.scene.layout.*;
 import javafx.stage.*;
 import theknife.Message;
 import theknife.client.ClientManager;
 import theknife.server.models.Password;
-import theknife.server.models.Utente;
 
-public class Welcome {
-
-    private static final double WIDTH     = 960;
-    private static final double HEIGHT    = 540;
-    private static final double MIN_WIDTH  = 600;
-    private static final double MIN_HEIGHT = 400;
-    private static final double FIELD_WIDTH = 150;
+public class Welcome implements GUIBasics {
 
     private Stage stage;
     private ClientManager client;
@@ -44,73 +36,13 @@ public class Welcome {
         return scene;
     }
 
-    private TextField field(String text) {
-        TextField f = new TextField();
-        f.setPromptText(text);
-        f.setPrefWidth(FIELD_WIDTH);
-        return f;
-    }
-
-    private PasswordField passField(String text) {
-        PasswordField f = new PasswordField();
-        f.setPromptText(text);
-        f.setPrefWidth(FIELD_WIDTH);
-        return f;
-    }
-
-    private Button greenBtn(String text) {
-        Button b = new Button(text);
-        b.setPrefWidth(FIELD_WIDTH);
-        b.getStyleClass().add("btn-green");
-        return b;
-    }
-
-    private Button blackBtn(String text) {
-        Button b = new Button(text);
-        b.setPrefWidth(FIELD_WIDTH);
-        b.getStyleClass().add("btn-black");
-        return b;
-    }
-
-    private Label errorLabel() {
-        Label l = new Label();
-        l.getStyleClass().add("error-label");
-        l.setVisible(false);
-        l.setManaged(false);
-        return l;
-    }
-
-    private void showError(Label l, String msg) {
-        l.setText("Errore: " + msg);
-        l.setVisible(true);
-        l.setManaged(true);
-    }
-
-    private void hideErr(Label l) {
-        l.setVisible(false);
-        l.setManaged(false);
-    }
-
-    private VBox logo() {
-        VBox box = new VBox(8);
-        box.setAlignment(Pos.CENTER);
-        try {
-            ImageView img = new ImageView(new Image(getClass().getResourceAsStream("/logo.png")));
-            img.setFitHeight(70);
-            img.setPreserveRatio(true);
-            box.getChildren().add(img);
-        } catch (Exception ignored) {}
-        return box;
-    }
-
-    //Scene
     private Scene welcomeScene() {
         VBox layout = new VBox(16);
         layout.setAlignment(Pos.CENTER);
         layout.setPadding(new Insets(40));
 
-        Button loginBtn = greenBtn("Accedi come Utente");
-        Button guestBtn = blackBtn("Accedi come Guest");
+        Button loginBtn = GUIComponents.greenBtn("Accedi");
+        Button guestBtn = GUIComponents.blackBtn("Accedi come Guest");
 
         loginBtn.setOnAction(e -> stage.setScene(loginScene()));
         // vai home "guest"
@@ -122,7 +54,7 @@ public class Welcome {
         HBox reg = new HBox(4, noAcc, regText);
         reg.setAlignment(Pos.CENTER);
 
-        layout.getChildren().addAll(logo(), loginBtn, guestBtn, reg);
+        layout.getChildren().addAll(GUIComponents.logo(), loginBtn, guestBtn, reg);
         return makeScene(layout, WIDTH, HEIGHT);
     }
 
@@ -131,31 +63,29 @@ public class Welcome {
         layout.setAlignment(Pos.CENTER);
         layout.setPadding(new Insets(40));
 
-        Label title = new Label("Accedi");
-        title.setStyle("-fx-font-size:22; -fx-font-weight:bold;");
+        TextField usernameField = GUIComponents.field("Username");
+        PasswordField passwordField = GUIComponents.passField("Password");
+        Label err = GUIComponents.errorLabel();
 
-        TextField usernameField     = field("Username");
-        PasswordField passwordField = passField("Password");
-        Label err = errorLabel();
-
-        Button loginBtn = greenBtn("Accedi");
-        Button backBtn  = blackBtn("← Indietro");
+        Button loginBtn = GUIComponents.greenBtn("Accedi");
+        Button backBtn = GUIComponents.blackBtn("Indietro");
         backBtn.setOnAction(e -> stage.setScene(welcomeScene()));
 
         loginBtn.setOnAction(e -> {
-            hideErr(err);
+            GUIComponents.hideErr(err);
             String user = usernameField.getText().trim();
             String psw = passwordField.getText();
-            if (user.isEmpty() || psw.isEmpty()) { showError(err, "Tutti i campi devono essere completati."); return; }
+            if (user.isEmpty() || psw.isEmpty()) { GUIComponents.showError(err, "Tutti i campi devono essere completati."); return; }
             try {
                 Message res = client.send(new Message("login", new Object[]{user, psw}));
-                if (res.getOp().equals("OK")) {                
+                if (res.getOp().equals("OK")) {   
+                                 
                 } else {
-                    showError(err, "Credenziali errate. Riprova.");
+                    GUIComponents.showError(err, "Credenziali errate. Riprova.");
                     passwordField.clear();
                 }
             } catch (ClassNotFoundException | IOException ioc) {
-                showError(err, "Errore durante la connessione con il server...");
+                GUIComponents.showError(err, "Errore durante la connessione con il server...");
             }
         });
 
@@ -166,7 +96,7 @@ public class Welcome {
         HBox reg = new HBox(4, noAcc, regText);
         reg.setAlignment(Pos.CENTER);
 
-        layout.getChildren().addAll(title, usernameField, passwordField, err, loginBtn, backBtn, reg);
+        layout.getChildren().addAll(GUIComponents.miniLogo(), usernameField, passwordField, err, loginBtn, backBtn, reg);
         return makeScene(layout, WIDTH, HEIGHT);
     }
 
@@ -175,15 +105,12 @@ public class Welcome {
         layout.setAlignment(Pos.CENTER);
         layout.setPadding(new Insets(40));
 
-        Label title = new Label("Registrati");
-        title.setStyle("-fx-font-size:22; -fx-font-weight:bold;");
-
-        TextField nomeField = field("Nome");
-        TextField cognomeField = field("Cognome");
-        TextField usernameField = field("Username");
-        TextField domicilioField = field("Domicilio (esempio: Viale Luigi Cadorna 10, Busto Arsizio, Italia");
-        PasswordField pswField = passField("Password");
-        PasswordField pswConfField = passField("Conferma password");
+        TextField nomeField = GUIComponents.field("Nome");
+        TextField cognomeField = GUIComponents.field("Cognome");
+        TextField usernameField = GUIComponents.field("Username");
+        TextField domicilioField = GUIComponents.field("Domicilio (esempio: Viale Luigi Cadorna 10, Busto Arsizio, Italia");
+        PasswordField pswField = GUIComponents.passField("Password");
+        PasswordField pswConfField = GUIComponents.passField("Conferma password");
 
         ToggleGroup ruoloBtns = new ToggleGroup();
         RadioButton ruolo_cliente = new RadioButton("Cliente");
@@ -194,14 +121,14 @@ public class Welcome {
         HBox ruoloRow = new HBox(20, ruolo_cliente, ruolo_ristoratore);
         ruoloRow.setAlignment(Pos.CENTER);
 
-        Label err = errorLabel();
+        Label err = GUIComponents.errorLabel();
 
-        Button regBtn  = greenBtn("Crea account");
-        Button backBtn = blackBtn("Indietro");
+        Button regBtn  = GUIComponents.greenBtn("Crea account");
+        Button backBtn = GUIComponents.blackBtn("Indietro");
         backBtn.setOnAction(e -> stage.setScene(welcomeScene()));
 
         regBtn.setOnAction(e -> {
-            hideErr(err);
+            GUIComponents.hideErr(err);
             String nome = nomeField.getText().trim();
             String cognome = cognomeField.getText().trim();
             String username = usernameField.getText().trim();
@@ -211,24 +138,24 @@ public class Welcome {
             String ruolo = ruolo_cliente.isSelected() ? "utente" : "ristoratore";
 
             if (nome.isEmpty() || cognome.isEmpty() || username.isEmpty() || domicilio.isEmpty() || psw.isEmpty() || pswConf.isEmpty()) {
-                showError(err, "Tutti i campi devono essere completati."); return;
+               GUIComponents.showError(err, "Tutti i campi devono essere completati."); return;
             }
-            if (!psw.equals(pswConf)) { showError(err, "Le password non coincidono..."); return; }
+            if (!psw.equals(pswConf)) { GUIComponents.showError(err, "Le password non coincidono..."); return; }
 
             try {
                 Message res = client.send(new Message("register", new Object[]{nome, cognome, username, Password.encrypt(psw), null, domicilio, ruolo}));
                 if (res.getOp().equals("OK")) {
                     stage.setScene(loginScene());
                 } else {
-                    showError(err, "Username già esistente.");
+                    GUIComponents.showError(err, "Username già esistente.");
                 }
             } catch (ClassNotFoundException | IOException ex) {
-                showError(err, "Errore di connessione al server.");
+                GUIComponents.showError(err, "Errore di connessione al server.");
             }
         });
 
-        layout.getChildren().addAll( title, nomeField, cognomeField, usernameField, domicilioField, pswField, pswConfField, ruoloRow, err, regBtn, backBtn);
+        layout.getChildren().addAll( GUIComponents.miniLogo(), nomeField, cognomeField, usernameField, domicilioField, pswField, pswConfField, ruoloRow, err, regBtn, backBtn);
 
-        return makeScene(layout, WIDTH, HEIGHT);
+        return GUIComponents.makeScene(layout, WIDTH, HEIGHT);
     }
 }
