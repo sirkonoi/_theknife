@@ -47,11 +47,7 @@ public class ServerSlave extends Thread {
                     result = new Message("OK_GUEST", new Object[]{new Guest((String) request.getDati()[0], (String) request.getDati()[1])});
                 }
                 out.writeObject(result);
-            } catch (ClassNotFoundException e) {
-                e.printStackTrace();
-            } catch (IOException e) {
-                e.printStackTrace();
-            } catch (SQLException e) {
+            } catch (ClassNotFoundException | IOException | SQLException e) {
                 e.printStackTrace();
             }
         }

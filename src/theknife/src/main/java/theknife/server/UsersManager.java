@@ -2,6 +2,8 @@ package theknife.server;
 
 import java.sql.*;
 
+import javax.naming.spi.DirStateFactory.Result;
+
 import theknife.server.models.*;
 
 public class UsersManager {
@@ -42,13 +44,27 @@ public class UsersManager {
         return null;
     }
 
-
-
     public boolean userExists( String username) throws SQLException {
         try(PreparedStatement statement = db.connection.prepareStatement("SELECT 1 FROM utente WHERE username =  ?")) {
             statement.setString(1, username);
             ResultSet rs = statement.executeQuery();
             return rs.next();
         }
+    }
+
+    public Utente getUserFromID(int id) {
+        String query = "SELECT * FROM utente WHERE id = ?";
+        try(PreparedStatement statement = db.connection.prepareStatement(query)) {
+            statement.setInt(1, id);
+            try(ResultSet rs = statement.executeQuery()) {
+                if(rs.next()) {
+                    if(rs.getString("ruolo").equals("ristoratore")) {
+                        return new Ristoratore(rs.getInt("id"), rs.getString("nome"), rs.getString("cognome"), rs.getString("username"), new Password(rs.getString("password")), rs.getDate("data_nascita"), rs.getString("domicilio"));
+                    }
+                    return new Utente(rs.getInt("id"), rs.getString("nome"), rs.getString("cognome"), rs.getString("username"), new Password(rs.getString("password")), rs.getDate("data_nascita"), rs.getString("domicilio"));
+                }
+            }
+        }catch(SQLException e) { e.printStackTrace(); }
+        return null;
     }
 }
