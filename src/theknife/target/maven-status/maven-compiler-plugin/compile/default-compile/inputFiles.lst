@@ -2,6 +2,7 @@ c:\Users\matti\Desktop\theknife\src\theknife\src\main\java\theknife\client\Clien
 c:\Users\matti\Desktop\theknife\src\theknife\src\main\java\theknife\client\gui\GUIComponents.java
 c:\Users\matti\Desktop\theknife\src\theknife\src\main\java\theknife\server\RestaurantManager.java
 c:\Users\matti\Desktop\theknife\src\theknife\src\main\java\theknife\server\models\Guest.java
+c:\Users\matti\Desktop\theknife\src\theknife\src\main\java\theknife\client\gui\Home.java
 c:\Users\matti\Desktop\theknife\src\theknife\src\main\java\theknife\server\models\Ristoratore.java
 c:\Users\matti\Desktop\theknife\src\theknife\src\main\java\theknife\server\models\Luogo.java
 c:\Users\matti\Desktop\theknife\src\theknife\src\main\java\theknife\server\models\Ristorante.java
@@ -10,7 +11,9 @@ c:\Users\matti\Desktop\theknife\src\theknife\src\main\java\theknife\server\Debug
 c:\Users\matti\Desktop\theknife\src\theknife\src\main\java\theknife\server\ServerManager.java
 c:\Users\matti\Desktop\theknife\src\theknife\src\main\java\theknife\server\models\Password.java
 c:\Users\matti\Desktop\theknife\src\theknife\src\main\java\theknife\server\ServerSlave.java
+c:\Users\matti\Desktop\theknife\src\theknife\src\main\java\theknife\server\models\Recensione.java
 c:\Users\matti\Desktop\theknife\src\theknife\src\main\java\theknife\client\gui\Welcome.java
+c:\Users\matti\Desktop\theknife\src\theknife\src\main\java\theknife\server\RecensioneManager.java
 c:\Users\matti\Desktop\theknife\src\theknife\src\main\java\theknife\Message.java
 c:\Users\matti\Desktop\theknife\src\theknife\src\main\java\theknife\server\DBManager.java
 c:\Users\matti\Desktop\theknife\src\theknife\src\main\java\theknife\server\models\Utente.java

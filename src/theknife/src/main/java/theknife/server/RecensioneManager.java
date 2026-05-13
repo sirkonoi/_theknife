@@ -56,6 +56,16 @@ public class RecensioneManager {
         return recensioni;           
     }
 
+    public double[] getInfoRecensioni(int idRistorante) {
+        List<Recensione> recensioni = getRecensioniRistorante(idRistorante);
+        double tmp = 0.0;
+        for(Recensione recensione : recensioni) {
+            tmp += recensione.getStelle();
+        }
+        return new double[]{tmp/recensioni.size(), recensioni.size()};
+    }
+
+
     public boolean addRisposta(int idRistorante, int idRecensore, String risposta) {
         String query = "UPDATE recensione SET risposta = ? WHERE utente = ? AND ristorante = ?";
         try (PreparedStatement statement = db.connection.prepareStatement(query)) {

@@ -3,7 +3,7 @@ package theknife.server.models;
 import java.io.*;
 import java.net.*;
 
-public class Luogo {
+public class Luogo implements Serializable {
     
     private int id;
     private String indirizzo;
@@ -33,8 +33,10 @@ public class Luogo {
         String urlString = "https://nominatim.openstreetmap.org/search?q=" + indirizzo.replace(" ", "+")
                 + "&format=json&limit=1";
         URL url = URI.create(urlString).toURL();
-        BufferedReader in = new BufferedReader(new InputStreamReader(url.openStream()));
-
+        HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+        conn.setRequestProperty("User-Agent", "TheKnife/1.0");
+        BufferedReader in = new BufferedReader(new InputStreamReader(conn.getInputStream()));
+        
         String json = "";
         String inputLine;
         while ((inputLine = in.readLine()) != null) {

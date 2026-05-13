@@ -42,7 +42,7 @@ public class RestaurantManager {
         double lat = coordinate[0];
         double lon = coordinate[1];
 
-        String query = "SELECT ris.*, luogo.nazione, luogo.citta, luogo.indirizzo, luogo.latitudine, luogo.longitudine FROM ristorante ris JOIN luogo ON ris.luogo = luogo.id WHERE (6371 * acos(cos(radians(?)) * cos(radians(luogo.latitudine)) * cos(radians(luogo.longitudine) - radians(?)) + sin(radians(?)) * sin(radians(luogo.latitudine)))) <= ?";
+        String query = "SELECT ris.*, luogo.nazione, luogo.citta, luogo.indirizzo, luogo.latitudine, luogo.longitudine FROM ristorante ris JOIN luogo ON ris.luogo = luogo.id WHERE (6371 * acos(cos(radians(?)) * cos(radians(luogo.latitudine)) * cos(radians(luogo.longitudine) - radians(?)) + sin(radians(?)) * sin(radians(luogo.latitudine)))) <= ? LIMIT 30";
 
         List<Ristorante> lista = new ArrayList<>();
         try (PreparedStatement statement = db.connection.prepareStatement(query)) {
@@ -58,7 +58,21 @@ public class RestaurantManager {
             }
         }
         return lista;
-    }    
+    }  
+    
+    //RIGUARDA
+    public List<String> getAllTipi() {
+        String query = "SELECT DISTINCT tipo FROM tipocucina";
+        List<String> tipi = new ArrayList<>();
+        try(PreparedStatement statement = db.connection.prepareStatement(query)) {
+            try(ResultSet rs = statement.executeQuery()) {
+                while(rs.next()) {
+                    tipi.add(rs.getString("tipo"));
+                }
+            }
+        }catch(SQLException e) {System.out.println("Errore nel selezionare i tipi...");}
+        return tipi;
+    }
 
     public Luogo findLuogo(int id) throws SQLException, IOException {
         PreparedStatement statement = db.connection.prepareStatement("SELECT * FROM luogo WHERE id = ?");

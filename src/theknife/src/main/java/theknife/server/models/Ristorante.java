@@ -1,6 +1,8 @@
 package theknife.server.models;
 
-public class Ristorante {
+import java.io.Serializable;
+
+public class Ristorante implements Serializable {
     private int id;
     private String nome;
     private Luogo luogo;
@@ -8,6 +10,7 @@ public class Ristorante {
     private boolean delivery;
     private boolean prenotazione_online;
     private int ristoratore;
+    //private String[] tipiCucina;
 
     public Ristorante(int id, String nome, Luogo luogo, int fascia_prezzo, boolean delivery, boolean prenotazione_online, int ristoratore) {
         this.id = id;
@@ -18,6 +21,8 @@ public class Ristorante {
         this.prenotazione_online = prenotazione_online;
         this.ristoratore = ristoratore;
     }
+    public int getId() { return id; }
+    public void setId(int id) { this.id = id; }
 
     public String getNome() { return nome; }
     public void setNome(String nome) { this.nome = nome; }

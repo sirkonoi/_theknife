@@ -1,6 +1,8 @@
 package theknife.client.gui;
 
 import java.io.IOException;
+import java.sql.SQLException;
+
 import javafx.geometry.*;
 import javafx.scene.*;
 import javafx.scene.control.*;
@@ -8,7 +10,9 @@ import javafx.scene.layout.*;
 import javafx.stage.*;
 import theknife.Message;
 import theknife.client.ClientManager;
+import theknife.server.RestaurantManager;
 import theknife.server.models.Password;
+import theknife.server.models.Utente;
 
 public class Welcome implements GUIBasics {
 
@@ -79,12 +83,12 @@ public class Welcome implements GUIBasics {
             try {
                 Message res = client.send(new Message("login", new Object[]{user, psw}));
                 if (res.getOp().equals("OK")) {   
-                                 
+                    new Home(stage, client, (Utente) res.getDati()[0]).show();                                 
                 } else {
                     GUIComponents.showError(err, "Credenziali errate. Riprova.");
                     passwordField.clear();
                 }
-            } catch (ClassNotFoundException | IOException ioc) {
+            } catch (ClassNotFoundException | IOException | SQLException ioc) {
                 GUIComponents.showError(err, "Errore durante la connessione con il server...");
             }
         });
