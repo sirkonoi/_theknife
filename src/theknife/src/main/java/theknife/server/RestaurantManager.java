@@ -35,39 +35,92 @@ public class RestaurantManager {
         return lista;
     }
 
-    public List<Ristorante> cercaVicini(String indirizzo, int raggio) throws SQLException, IOException {
-        double[] coordinate = Luogo.getLatitudineLongitudine(indirizzo);
-        if (coordinate == null) return new ArrayList<>();
-
+    public List<Ristorante> filtra(Object[] filtri) throws SQLException, IOException {
+        double[] coordinate = Luogo.getLatitudineLongitudine((String) filtri[5]);
+        if (coordinate == null)
+            return new ArrayList<>();
         double lat = coordinate[0];
         double lon = coordinate[1];
+        int raggio = (int) filtri[0];
 
-        String query = "SELECT ris.*, luogo.nazione, luogo.citta, luogo.indirizzo, luogo.latitudine, luogo.longitudine FROM ristorante ris JOIN luogo ON ris.luogo = luogo.id WHERE (6371 * acos(cos(radians(?)) * cos(radians(luogo.latitudine)) * cos(radians(luogo.longitudine) - radians(?)) + sin(radians(?)) * sin(radians(luogo.latitudine)))) <= ? LIMIT 30";
+        String query = "SELECT ris.*, luogo.nazione, luogo.citta, luogo.indirizzo, luogo.latitudine, luogo.longitudine FROM ristorante ris JOIN luogo ON ris.luogo = luogo.id WHERE (6371 * acos(cos(radians(?)) * cos(radians(luogo.latitudine)) * " +"cos(radians(luogo.longitudine) - radians(?)) + sin(radians(?)) * sin(radians(luogo.latitudine)))) <= ?";
+
+        if (filtri[1] != null) {
+            query += " AND ris.id IN (SELECT ristorante FROM tipo_cucina_ristorante WHERE tipo_cucina = ?)";
+        }
+
+        if (filtri[2] != null) {
+            String prezzo = (String) filtri[2];
+            if (prezzo.equals("< 20€")) {
+                query += " AND ris.fascia_prezzo < 20";
+            }
+            else if (prezzo.equals("20-50€")) {
+                query += " AND ris.fascia_prezzo BETWEEN 20 AND 50";
+            }    
+            else if (prezzo.equals("50-100€")) {
+                query += " AND ris.fascia_prezzo BETWEEN 50 AND 100";
+            }
+            else if (prezzo.equals("50-100€")) {
+                query += " AND ris.fascia_prezzo > 100";  
+            }          
+        }
+
+        if (filtri[3] != null) {
+            query += " AND ris.delivery = ?";
+        }
+        if (filtri[4] != null) {
+            query += " AND ris.prenotazione_online = ?";
+        }
+        //query += " LIMIT 30";
 
         List<Ristorante> lista = new ArrayList<>();
-        try (PreparedStatement statement = db.connection.prepareStatement(query)) {
-            statement.setDouble(1, lat);
-            statement.setDouble(2, lon);
-            statement.setDouble(3, lat);
-            statement.setDouble(4, raggio);
-            ResultSet rs = statement.executeQuery();
+        try (PreparedStatement ps = db.connection.prepareStatement(query)) {
+            int i = 1;
+            ps.setDouble(i++, lat);
+            ps.setDouble(i++, lon);
+            ps.setDouble(i++, lat);
+            ps.setInt(i++, raggio);
+            if (filtri[1] != null) {
+                ps.setString(i++, (String) filtri[1]);
+            }    
+            if (filtri[3] != null) {
+                ps.setBoolean(i++, (boolean) filtri[3]);
+            }    
+            if (filtri[4] != null) {
+                ps.setBoolean(i++, (boolean) filtri[4]);
+            }    
+
+            ResultSet rs = ps.executeQuery();
             while (rs.next()) {
-                Luogo luogo = new Luogo( rs.getString("indirizzo"), rs.getString("citta"), rs.getString("nazione"), rs.getDouble("latitudine"), rs.getDouble("longitudine"));
-                lista.add(new Ristorante(rs.getInt("id"), rs.getString("nome"), luogo, rs.getInt("fascia_prezzo"), rs.getBoolean("delivery"), rs.getBoolean("prenotazione_online"), rs.getInt("ristoratore")
-                ));
+                Luogo luogo = new Luogo(rs.getString("indirizzo"), rs.getString("citta"), rs.getString("nazione"), rs.getDouble("latitudine"), rs.getDouble("longitudine"));
+                lista.add(new Ristorante(rs.getInt("id"), rs.getString("nome"), luogo, rs.getInt("fascia_prezzo"), rs.getBoolean("delivery"), rs.getBoolean("prenotazione_online"), rs.getInt("ristoratore")));
             }
         }
         return lista;
-    }  
+    }
+
+    public Ristorante cercaRistorante(String nome) {
+        String query = "SELECT ris.*, luogo.nazione, luogo.citta, luogo.indirizzo, luogo.latitudine, luogo.longitudine FROM ristorante ris JOIN luogo ON ris.luogo = luogo.id  WHERE nome = ?";
+        try(PreparedStatement statement = db.connection.prepareStatement(query)) {
+            statement.setString(1, nome);
+            try(ResultSet rs = statement.executeQuery()) {
+                if(rs.next()) {
+                Luogo luogo = new Luogo( rs.getString("indirizzo"), rs.getString("citta"), rs.getString("nazione"), rs.getDouble("latitudine"), rs.getDouble("longitudine"));
+                return new Ristorante(rs.getInt("id"), rs.getString("nome"), luogo, rs.getInt("fascia_prezzo"), rs.getBoolean("delivery"), rs.getBoolean("prenotazione_online"), rs.getInt("ristoratore"));                
+                }
+            }
+        }catch(SQLException e) {}
+        return null;
+    }
     
-    //RIGUARDA
     public List<String> getAllTipi() {
         String query = "SELECT DISTINCT tipo FROM tipocucina";
         List<String> tipi = new ArrayList<>();
         try(PreparedStatement statement = db.connection.prepareStatement(query)) {
             try(ResultSet rs = statement.executeQuery()) {
                 while(rs.next()) {
-                    tipi.add(rs.getString("tipo"));
+                    String tipo = rs.getString("tipo");
+                    tipi.add(tipo);
                 }
             }
         }catch(SQLException e) {System.out.println("Errore nel selezionare i tipi...");}

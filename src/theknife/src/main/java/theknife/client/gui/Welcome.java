@@ -2,7 +2,6 @@ package theknife.client.gui;
 
 import java.io.IOException;
 import java.sql.SQLException;
-
 import javafx.geometry.*;
 import javafx.scene.*;
 import javafx.scene.control.*;
@@ -10,7 +9,7 @@ import javafx.scene.layout.*;
 import javafx.stage.*;
 import theknife.Message;
 import theknife.client.ClientManager;
-import theknife.server.RestaurantManager;
+import theknife.server.models.Guest;
 import theknife.server.models.Password;
 import theknife.server.models.Utente;
 
@@ -49,7 +48,7 @@ public class Welcome implements GUIBasics {
         Button guestBtn = GUIComponents.blackBtn("Accedi come Guest");
 
         loginBtn.setOnAction(e -> stage.setScene(loginScene()));
-        // vai home "guest"
+        guestBtn.setOnAction(e -> stage.setScene(guestScene()));
 
         Label noAcc = new Label("Non hai un account?");
         noAcc.setStyle("-fx-font-size:12;");
@@ -72,7 +71,7 @@ public class Welcome implements GUIBasics {
         Label err = GUIComponents.errorLabel();
 
         Button loginBtn = GUIComponents.greenBtn("Accedi");
-        Button backBtn = GUIComponents.blackBtn("Indietro");
+        Button backBtn = GUIComponents.blackBtn("↤ Indietro");
         backBtn.setOnAction(e -> stage.setScene(welcomeScene()));
 
         loginBtn.setOnAction(e -> {
@@ -82,14 +81,14 @@ public class Welcome implements GUIBasics {
             if (user.isEmpty() || psw.isEmpty()) { GUIComponents.showError(err, "Tutti i campi devono essere completati."); return; }
             try {
                 Message res = client.send(new Message("login", new Object[]{user, psw}));
-                if (res.getOp().equals("OK")) {   
-                    new Home(stage, client, (Utente) res.getDati()[0]).show();                                 
+                if (res.getOp().equals("OK")) {
+                    new Home(stage, client, (Utente) res.getDati()[0]).show();
                 } else {
                     GUIComponents.showError(err, "Credenziali errate. Riprova.");
                     passwordField.clear();
                 }
             } catch (ClassNotFoundException | IOException | SQLException ioc) {
-                GUIComponents.showError(err, "Errore durante la connessione con il server...");
+                GUIComponents.showError(err, "Connessione con il server fallita...");
             }
         });
 
@@ -128,7 +127,7 @@ public class Welcome implements GUIBasics {
         Label err = GUIComponents.errorLabel();
 
         Button regBtn  = GUIComponents.greenBtn("Crea account");
-        Button backBtn = GUIComponents.blackBtn("Indietro");
+        Button backBtn = GUIComponents.blackBtn("↤ Indietro");
         backBtn.setOnAction(e -> stage.setScene(welcomeScene()));
 
         regBtn.setOnAction(e -> {
@@ -158,8 +157,37 @@ public class Welcome implements GUIBasics {
             }
         });
 
-        layout.getChildren().addAll( GUIComponents.miniLogo(), nomeField, cognomeField, usernameField, domicilioField, pswField, pswConfField, ruoloRow, err, regBtn, backBtn);
-
+        layout.getChildren().addAll(GUIComponents.miniLogo(), nomeField, cognomeField, usernameField, domicilioField, pswField, pswConfField, ruoloRow, err, regBtn, backBtn);
         return GUIComponents.makeScene(layout, WIDTH, HEIGHT);
+    }
+
+    private Scene guestScene() {
+        VBox layout = new VBox(12);
+        layout.setAlignment(Pos.CENTER);
+        layout.setPadding(new Insets(40));
+
+        Label titleLabel = new Label("Inserisci il tuo domicilio:");
+        titleLabel.setStyle("-fx-font-size: 16; -fx-font-weight: bold;");
+
+        TextField domicilioField = GUIComponents.field("Es: Via Roma, Milano, Italia");
+        Label err = GUIComponents.errorLabel();
+
+        Button continueBtn = GUIComponents.greenBtn("Continua");
+        Button backBtn = GUIComponents.blackBtn("↤ Indietro");
+        backBtn.setOnAction(e -> stage.setScene(welcomeScene()));
+
+        continueBtn.setOnAction(e -> {
+            GUIComponents.hideErr(err);
+            String domicilio = domicilioField.getText().trim();
+            if (domicilio.isEmpty()) { GUIComponents.showError(err, "Inserisci un domicilio."); return; }
+            try {
+                new Home(stage, client, new Guest(domicilio)).show();
+            } catch (SQLException | IOException ec) {
+                GUIComponents.showError(err, "Errore durante il caricamento.");
+            }
+        });
+
+        layout.getChildren().addAll(GUIComponents.miniLogo(), titleLabel, domicilioField, err, continueBtn, backBtn);
+        return makeScene(layout, WIDTH, HEIGHT);
     }
 }

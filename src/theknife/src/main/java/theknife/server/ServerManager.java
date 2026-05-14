@@ -18,11 +18,19 @@ public class ServerManager {
         }
     }
 
-    public void exec() throws IOException {
-        Socket socket;
+    public void exec()  {
+        Socket socket = null;
         while(true) {
-            socket = server.accept();
-            new ServerSlave(socket).start();
+            try {
+                socket = server.accept();
+                System.out.println("Il client " + socket + " si e' connesso.");
+                new ServerSlave(socket).start();
+            }catch(IOException e) {
+                try {
+                    System.out.println("Il client " + socket + " si e' disconnesso.");
+                    socket.close();
+                } catch (IOException e1) {}
+            }
         }
     }
 

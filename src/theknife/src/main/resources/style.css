@@ -80,3 +80,153 @@
 .scroll-pane .viewport {
     -fx-background-color: #1a1a1a;
 }
+
+.side-bar {
+    -fx-background-color: #222922; 
+    -fx-border-color: #2e3d2e;
+    -fx-border-width: 0 1 0 0;
+    -fx-pref-width: 190px;
+    -fx-min-width: 160px;
+    -fx-padding: 24 14 24 14;        
+}
+
+.avatar {
+    -fx-fill: #2a2a2a;
+    -fx-stroke: #4caf50;
+    -fx-stroke-width: 2px;
+}
+
+.avatar-box {
+    -fx-alignment: center;
+}
+
+.username {
+    -fx-text-fill: #f0f0f0;
+    -fx-font-size: 13px;
+    -fx-font-weight: bold;
+}
+
+.separator {
+    -fx-background-color: #2e3d2e;
+}
+
+.logout-btn {
+    -fx-background-color: transparent;
+    -fx-text-fill: #e05252;
+    -fx-font-size: 13px;
+    -fx-background-radius: 6px;
+    -fx-cursor: hand;
+}
+
+.logout-btn:hover {
+    -fx-background-color: #2e3d2e;
+}
+
+.combobox {
+    -fx-pref-height: 28px;
+}
+
+.checkbox {
+    -fx-text-fill: #f0f0f0;
+}
+
+.scroll {
+    -fx-background: #1a1a1a;
+    -fx-background-color: #1a1a1a;
+}
+
+.sidebar-btn{
+-fx-background-color:transparent;
+-fx-text-fill:#f0f0f0;
+-fx-font-size:13px;
+-fx-background-radius:6px;
+-fx-cursor:hand;
+}
+
+.sidebar-btn:hover{
+-fx-background-color:#2e3d2e;
+-fx-text-fill:#4caf50;
+}
+
+.ristorante-card{
+-fx-background-color:#222922;
+-fx-background-radius:8px;
+-fx-border-color:#2e3d2e;
+-fx-border-radius:8px;
+-fx-border-width:1px;
+-fx-cursor:hand;
+}
+
+.ristorante-card:hover{
+-fx-background-color:#263026;
+-fx-border-color:#4caf50;
+}
+
+.card-titolo{
+-fx-text-fill:#f0f0f0;
+-fx-font-size:14px;
+-fx-font-weight:bold;
+}
+
+.card-sottotitolo{
+-fx-text-fill:#888888;
+-fx-font-size:12px;
+}
+
+.card-stelle{
+-fx-text-fill:#4caf50;
+-fx-font-size:12px;
+}
+
+.slider-testo {
+    -fx-text-fill: #f0f0f0;
+    -fx-font-size: 12;
+}
+
+.slider-titolo {
+    -fx-text-fill: #888888;
+    -fx-font-size: 11;
+}
+
+.slider .track {
+    -fx-background-color: #2e3d2e;
+}
+
+.slider .thumb {
+    -fx-background-color: #4caf50;
+}
+
+.profilo-card {
+    -fx-background-color: #222922;
+    -fx-background-radius: 10;
+    -fx-border-color: #2e3d2e;
+    -fx-border-width: 1;
+    -fx-border-radius: 10;
+}
+
+.info-field {
+    -fx-text-fill: #888888;
+    -fx-font-size: 13;
+}
+
+.info-testo {
+    -fx-text-fill: #f0f0f0;
+    -fx-font-size: 13;
+}
+
+.nome-label {
+    -fx-font-size: 18;
+    -fx-font-weight: bold;
+    -fx-text-fill: #f0f0f0;
+}
+
+.ruolo-label {
+    -fx-font-size: 12;
+    -fx-text-fill: #4caf50;
+}
+
+.iniziale-label {
+    -fx-text-fill: #4caf50;
+    -fx-font-size: 16;
+    -fx-font-weight: bold;
+}

@@ -62,7 +62,11 @@ public class RecensioneManager {
         for(Recensione recensione : recensioni) {
             tmp += recensione.getStelle();
         }
+        if(tmp == 0) {
+            return new double[]{0, recensioni.size()};
+        }
         return new double[]{tmp/recensioni.size(), recensioni.size()};
+
     }
 
 

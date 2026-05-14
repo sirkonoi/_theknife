@@ -1,15 +1,31 @@
 package theknife.client.gui;
 
+import java.util.List;
+
+import javafx.geometry.Insets;
 import javafx.geometry.Pos;
+import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
+import javafx.scene.control.CheckBox;
+import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.PasswordField;
+import javafx.scene.control.ScrollPane;
+import javafx.scene.control.Separator;
+import javafx.scene.control.Slider;
 import javafx.scene.control.TextField;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.Priority;
+import javafx.scene.layout.Region;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
+import javafx.scene.shape.Circle;
+import javafx.stage.Stage;
+import theknife.client.ClientManager;
+import theknife.server.models.Utente;
 
 public class GUIComponents implements GUIBasics {
     public static TextField field(String text) {
@@ -41,6 +57,24 @@ public class GUIComponents implements GUIBasics {
         b.getStyleClass().add("btn-black");
         return b;
     }
+
+    public static Button logoutButton(Stage stage, ClientManager client) {
+
+        Button btn = new Button("⛔ Esci");
+        btn.getStyleClass().add("logout-btn");
+
+        btn.setOnAction(e -> new Welcome(stage, client).show());
+
+        return btn;
+    }   
+    
+    public static Button sidebarBtn(String testo) {
+        Button b = new Button(testo);
+        b.setMaxWidth(Double.MAX_VALUE);
+        b.setAlignment(Pos.CENTER_LEFT);
+        b.getStyleClass().add("sidebar-btn");
+        return b;
+    }  
 
     public static Label errorLabel() {
         Label l = new Label();
@@ -83,12 +117,197 @@ public class GUIComponents implements GUIBasics {
             box.getChildren().add(img);
         } catch (Exception ignored) {}
         return box;
-    }      
+    }  
     
-    public static Scene makeScene(VBox box, double weight, double height) {
+    public static VBox sidebar() {
+        VBox sidebar = new VBox(12);
+        sidebar.getStyleClass().add("side-bar");
+        return sidebar;
+    }
+
+    public static Label username(String username) {
+
+        Label label = new Label(username);
+        label.getStyleClass().add("username");
+
+        label.setWrapText(true);
+        label.setMaxWidth(Double.MAX_VALUE);
+
+        return label;
+    }    
+
+    public static Separator separator() {
+
+        Separator sep = new Separator();
+        sep.getStyleClass().add("separator");
+
+        return sep;
+    }
+    
+    public static Region spacer() {
+        Region spacer = new Region();
+        VBox.setVgrow(spacer, Priority.ALWAYS);
+        return spacer;
+    }   
+    
+    public static ComboBox<String> tipiCucinaBox(List<String> lista) {
+
+        ComboBox<String> tipi = new ComboBox<>();
+        tipi.setPromptText("Cucina");
+        tipi.setPrefWidth(110);
+
+        tipi.getItems().add("Nessuna");
+        tipi.getItems().setAll(lista);
+
+        tipi.getStyleClass().add("combobox");
+
+        return tipi;
+    }  
+    
+    public static ComboBox<String> prezzoBox() {
+
+        ComboBox<String> prezzo = new ComboBox<>();
+        prezzo.setPromptText("Prezzo");
+        prezzo.setPrefWidth(100);
+
+        prezzo.getItems().addAll("< 20€", "20-50€", "50-100€", "> 100€");
+
+        prezzo.getStyleClass().add("combobox");
+
+        return prezzo;
+    }  
+    
+    public static CheckBox filterCheckBox(String testo) {
+
+        CheckBox check = new CheckBox(testo);
+        check.getStyleClass().add("checkbox");
+
+        return check;
+    }  
+    
+    public static ScrollPane scrollPane(Node content) {
+
+        ScrollPane scroll = new ScrollPane(content);
+
+        scroll.setFitToWidth(true);
+        scroll.setHbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
+
+        scroll.getStyleClass().add("scroll");
+
+        VBox.setVgrow(scroll, Priority.ALWAYS);
+
+        return scroll;
+    }
+    
+
+    //rivedere x GUEST
+    public static HBox ristoranteCard(String nome, String citta, String cucina, int prezzo, double media, int numRec, Utente utente) {
+        HBox card = new HBox(16);
+        card.setPadding(new Insets(12, 16, 12, 16));
+        card.setAlignment(Pos.CENTER_LEFT);
+        card.getStyleClass().add("ristorante-card");
+
+        VBox info = new VBox(4);
+        HBox.setHgrow(info, Priority.ALWAYS);
+
+        Label nomeLabel = new Label(nome);
+        nomeLabel.getStyleClass().add("card-titolo");
+        Label dettagliLabel = new Label(citta + " - " + cucina + " - " + prezzo + "€");
+        dettagliLabel.getStyleClass().add("card-sottotitolo");
+        Label stelleLabel = new Label("⭐ " + (media == 0.0 ? 0 : media) + " (" + numRec + (numRec == 1 ? " recensione)" : " recensioni)"));
+        stelleLabel.getStyleClass().add("card-stelle");
+
+        info.getChildren().addAll(nomeLabel, dettagliLabel, stelleLabel);
+
+        HBox actions = new HBox(8);
+        actions.setAlignment(Pos.CENTER_RIGHT);
+
+        Button dettagliBtn = GUIComponents.blackBtn("Dettagli");
+        actions.getChildren().add(dettagliBtn);
+
+        if (utente != null) {
+            Button prefBtn = GUIComponents.blackBtn("❤");
+            actions.getChildren().add(prefBtn);
+
+            if ("utente".equals(utente.getRuolo())) {
+                Button recBtn = GUIComponents.greenBtn("Recensisci");
+                actions.getChildren().add(recBtn);
+            }
+        }
+
+        card.getChildren().addAll(info, actions);
+        return card;
+    }
+
+    public static VBox sliderDistanza(Slider[] sliderRef) {
+        Slider slider = new Slider(5, 200, 30);
+        slider.setShowTickLabels(true);
+        slider.setMajorTickUnit(50);
+        slider.setBlockIncrement(5);
+        slider.setPrefWidth(120);
+
+        Label distanzaLabel = new Label("30 km");
+        distanzaLabel.getStyleClass().add("filter-label");
+        slider.valueProperty().addListener((obs, oldVal, newVal) ->
+            distanzaLabel.setText((int) newVal.doubleValue() + " km")
+        );
+
+        Label title = new Label("Raggio:");
+        title.getStyleClass().add("filter-title");
+
+        sliderRef[0] = slider;
+        return new VBox(2, title, slider, distanzaLabel);
+    }  
+    
+    public static StackPane avatar(String nome) {
+        Circle cerchio = new Circle(26);
+        cerchio.setStyle("-fx-fill: #2a2a2a; -fx-stroke: #4caf50; -fx-stroke-width: 2;");
+        String iniziale = (nome != null && !nome.isEmpty()) ? String.valueOf(nome.charAt(0)).toUpperCase() : "?";
+        Label inizialeLabel = new Label(iniziale);
+        inizialeLabel.getStyleClass().add("iniziale-label");
+        StackPane box = new StackPane(cerchio, inizialeLabel);
+        box.setAlignment(Pos.CENTER);
+        return box;
+    }
+
+    public static VBox profiloCard(String nome, String ruolo, String username, String domicilio) {
+        VBox card = new VBox(14);
+        card.setPadding(new Insets(28, 36, 28, 36));
+        card.setAlignment(Pos.CENTER_LEFT);
+        card.setMaxWidth(400);
+        card.getStyleClass().add("profilo-card");
+
+        StackPane avatarBox = avatar(nome);
+
+        Label nomeLabel = new Label(nome);
+        nomeLabel.getStyleClass().add("nome-label");
+        Label ruoloLabel = new Label(ruolo);
+        ruoloLabel.getStyleClass().add("ruolo-label");
+        VBox nameBox = new VBox(4, nomeLabel, ruoloLabel);
+        nameBox.setAlignment(Pos.CENTER);
+
+        Separator sep = separator();
+        VBox.setMargin(sep, new Insets(4, 0, 4, 0));
+
+        card.getChildren().addAll(avatarBox, nameBox, sep,infoRow("👤", "Username", username), infoRow("📍", "Domicilio", domicilio));
+        return card;
+    }
+
+    public static HBox infoRow(String emoji, String titolo, String testo) {
+        Label emojiLabel  = new Label(emoji);
+        Label titoloLabel = new Label(titolo + ": ");
+        titoloLabel.getStyleClass().add("info-titolo");
+        Label testoLabel = new Label(testo);
+        testoLabel.getStyleClass().add("info-valore");
+        HBox row = new HBox(8, emojiLabel, titoloLabel, testoLabel);
+        row.setAlignment(Pos.CENTER_LEFT);
+        return row;
+    }    
+
+    public static Scene makeScene(VBox box, double w, double h) {
         StackPane container = new StackPane(box);
         StackPane.setAlignment(box, Pos.CENTER);
-        Scene scene = new Scene(container, weight, height);
+        Scene scene = new Scene(container, w, h);
         scene.getStylesheets().add(GUIComponents.class.getResource("/style.css").toExternalForm());
         return scene;
     }    

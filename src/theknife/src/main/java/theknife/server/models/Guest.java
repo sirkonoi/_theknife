@@ -8,7 +8,7 @@ public class Guest implements Serializable {
     private String domicilio;
     private String ruolo;
 
-    public Guest(String nome, String domicilio) {
+    public Guest(String domicilio) {
         this.nome = nome;
         this.domicilio = domicilio;
         ruolo = "guest";
@@ -17,7 +17,7 @@ public class Guest implements Serializable {
     public String getNome() { return nome; }
     public void setNome(String nome) { this.nome = nome; }
     
-    public String getDOmicilio() { return domicilio; }
+    public String getDomicilio() { return domicilio; }
     public void setDomicilio(String domicilio) { this.domicilio = domicilio; }
 
     public String getRuolo() { return ruolo; }
