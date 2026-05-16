@@ -65,16 +65,32 @@ public class ServerSlave extends Thread {
                     String nome = (String) request.getDati()[0];
                     Ristorante ris = restaurantManager.cercaRistorante(nome);
                     if (ris == null) {
-                        result = new Message("ERROR", new Object[] { "Login fallito..." });
+                        result = new Message("ERROR", new Object[] { "ricerca fallita..." });
                     }
                     result = new Message("OK", new Object[] { ris });
                 }
+
+                if (request.getOp().equals("cercaFromId")) {
+                    int id = (int) request.getDati()[0];
+                    Ristorante ris = restaurantManager.cercaRistorante(id);
+                    if (ris == null) {
+                        result = new Message("ERROR", new Object[] { "ricerca fallita..." });
+                    }
+                    result = new Message("OK", new Object[] { ris });
+                }                
 
                 if (request.getOp().equals("recensioniRistorante")) {
                     int id = (int) request.getDati()[0];
                     List<Recensione> lista = recensioniManager.getRecensioniRistorante(id);
                     result = new Message("OK", new Object[] { lista });
                 }
+
+                if(request.getOp().equals("getTipoRistorante")) {
+                    int id = (int) request.getDati()[0];
+                    List<String> tipo = restaurantManager.getTipo(id);
+                    result = new Message("OK", new Object[] { tipo });
+                }
+                
                 if (request.getOp().equals("infoRecensioni")) {
                     int id = (int) request.getDati()[0];
                     double[] info = recensioniManager.getInfoRecensioni(id);

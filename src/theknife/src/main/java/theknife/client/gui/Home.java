@@ -109,6 +109,7 @@ public class Home implements GUIBasics {
 
         String indirizzo = (guestHome) ? guest.getDomicilio() : utente.getDomicilio();
         List<Ristorante> listaRistoranti = new ArrayList<>();
+        
         try {
             res = client.send(new Message("filtra", new Object[]{30, null, null, null, null, indirizzo}));
             listaRistoranti = (List<Ristorante>) res.getDati()[0];
@@ -121,8 +122,7 @@ public class Home implements GUIBasics {
                 res = client.send(new Message("infoRecensioni", new Object[]{ristorante.getId()}));
                 info = (double[]) res.getDati()[0];
             } catch (ClassNotFoundException | IOException e1) { System.out.println("Errore nel caricare la lista dei ristoranti vicini..");}            
-            boxRistoranti.getChildren().add(GUIComponents.ristoranteCard(ristorante.getNome(), ristorante.getLuogo().getIndirizzo(), "PLACEHOLDER", ristorante.getFasciaPrezzo(), info[0], (int)info[1], utente));
-        }
+            boxRistoranti.getChildren().add(GUIComponents.ristoranteCard(ristorante, info[0], (int)info[1], utente, guest, guestHome, stage, client, stage.getScene()));        }
         //bisogna inserire tipi ristorante
 
         ComboBox<String> filtroCucina = GUIComponents.tipiCucinaBox(tipi);
@@ -151,11 +151,7 @@ public class Home implements GUIBasics {
                         Message risInfo = client.send(new Message("infoRecensioni", new Object[]{ristorante.getId()}));
                         info = (double[]) risInfo.getDati()[0];
                     } catch (ClassNotFoundException | IOException ex) { info = new double[]{0, 0}; }
-                    boxRistoranti.getChildren().add(GUIComponents.ristoranteCard(
-                        ristorante.getNome(), ristorante.getLuogo().getIndirizzo(),
-                        "PLACEHOLDER", ristorante.getFasciaPrezzo(), info[0], (int) info[1], utente
-                    ));
-                }
+                    boxRistoranti.getChildren().add(GUIComponents.ristoranteCard(ristorante, info[0], (int)info[1], utente, guest, guestHome, stage, client, stage.getScene()));                }
             } catch (ClassNotFoundException | IOException ex) {
                 System.out.println("Errore, il filtraggio non e' riuscito...");
             }
@@ -179,60 +175,22 @@ public class Home implements GUIBasics {
         layout.setAlignment(Pos.CENTER);
         layout.setPadding(new Insets(40));
         layout.setStyle("-fx-background-color: #1a1a1a;");
-
-        VBox card = new VBox(14);
-        card.setPadding(new Insets(28, 36, 28, 36));
-        card.setAlignment(Pos.CENTER_LEFT);
-        card.setMaxWidth(400);
-        card.setStyle(
-            "-fx-background-color: #222922;" +
-            "-fx-background-radius: 10;" +
-            "-fx-border-color: #2e3d2e;" +
-            "-fx-border-width: 1;" +
-            "-fx-border-radius: 10;"
-        );
-;
-        StackPane avatar = GUIComponents.avatar(guestHome ? "Guest" : utente.getUsername());
-
-        Label nomeLabel = new Label(guestHome ? "Ospite" : utente.getNome() + " " + utente.getCognome());
-        nomeLabel.setStyle("-fx-font-size: 18; -fx-font-weight: bold; -fx-text-fill: #f0f0f0;");
-
-        Label ruoloLabel = new Label(guestHome ? "Guest" : (utente.getRuolo().equals("utente") ? "Utente" : "Ristoratore"));
-        ruoloLabel.setStyle("-fx-font-size: 12; -fx-text-fill: #4caf50;");
-
-        VBox nameBox = new VBox(4, nomeLabel, ruoloLabel);
-        nameBox.setAlignment(Pos.CENTER);
-
-        Separator sep = GUIComponents.separator();
-        VBox.setMargin(sep, new Insets(4, 0, 4, 0));
-
-        card.getChildren().addAll(avatar, nameBox, sep,
-            infoRow("👤", "Username",  guestHome ? "Guest" : utente.getUsername()),
-            infoRow("📍", "Domicilio", guestHome ? guest.getDomicilio() : utente.getDomicilio())
-        );
+        String nome = guestHome ? "Guest" : utente.getNome() + " " + utente.getCognome();
+        String ruolo = guestHome ? "Guest" : utente.getRuolo();
+        String username = guestHome ? "Guest" : utente.getUsername();
+        String domicilio = guestHome ? guest.getDomicilio().toUpperCase() : utente.getDomicilio().toUpperCase();
 
         Button backBtn = GUIComponents.blackBtn("↤ Indietro");
         backBtn.setOnAction(e -> {
             try { show(); } catch (SQLException | IOException ex) { ex.printStackTrace(); }
         });
 
-        layout.getChildren().addAll(card, backBtn);
-
+        layout.getChildren().addAll(GUIComponents.profiloCard(nome, ruolo, username, domicilio), backBtn);
+        
         double w = stage.isShowing() ? stage.getWidth()  : WIDTH;
         double h = stage.isShowing() ? stage.getHeight() : HEIGHT;
         Scene scene = new Scene(new StackPane(layout), w, h);
         scene.getStylesheets().add(getClass().getResource("/style.css").toExternalForm());
         return scene;
-    }
-
-    private HBox infoRow(String icon, String label, String value) {
-        Label iconLabel  = new Label(icon);
-        Label fieldLabel = new Label(label + ": ");
-        fieldLabel.setStyle("-fx-text-fill: #888888; -fx-font-size: 13;");
-        Label valueLabel = new Label(value);
-        valueLabel.setStyle("-fx-text-fill: #f0f0f0; -fx-font-size: 13;");
-        HBox row = new HBox(8, iconLabel, fieldLabel, valueLabel);
-        row.setAlignment(Pos.CENTER_LEFT);
-        return row;
     }
 }

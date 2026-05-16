@@ -112,6 +112,20 @@ public class RestaurantManager {
         }catch(SQLException e) {}
         return null;
     }
+
+    public Ristorante cercaRistorante(int id) {
+        String query = "SELECT ris.*, luogo.nazione, luogo.citta, luogo.indirizzo, luogo.latitudine, luogo.longitudine FROM ristorante ris JOIN luogo ON ris.luogo = luogo.id  WHERE id = ?";
+        try(PreparedStatement statement = db.connection.prepareStatement(query)) {
+            statement.setInt(1, id);
+            try(ResultSet rs = statement.executeQuery()) {
+                if(rs.next()) {
+                Luogo luogo = new Luogo( rs.getString("indirizzo"), rs.getString("citta"), rs.getString("nazione"), rs.getDouble("latitudine"), rs.getDouble("longitudine"));
+                return new Ristorante(rs.getInt("id"), rs.getString("nome"), luogo, rs.getInt("fascia_prezzo"), rs.getBoolean("delivery"), rs.getBoolean("prenotazione_online"), rs.getInt("ristoratore"));                
+                }
+            }
+        }catch(SQLException e) {}
+        return null;
+    }    
     
     public List<String> getAllTipi() {
         String query = "SELECT DISTINCT tipo FROM tipocucina";
@@ -122,6 +136,21 @@ public class RestaurantManager {
                     String tipo = rs.getString("tipo");
                     tipi.add(tipo);
                 }
+            }
+        }catch(SQLException e) {System.out.println("Errore nel selezionare i tipi...");}
+        return tipi;
+    }
+
+    public List<String> getTipo(int id) {
+        String query = "SELECT tipo_cucina FROM Ristorante JOIN tipo_cucina_ristorante ON id = ristorante WHERE id = ?";
+        List<String> tipi = new ArrayList<>();
+        try(PreparedStatement statement = db.connection.prepareStatement(query)) {
+            statement.setInt(1, id);
+            try(ResultSet rs = statement.executeQuery()) {
+                while(rs.next()) {
+                    String tipo = rs.getString("tipo_cucina");
+                    tipi.add(tipo);    
+                }            
             }
         }catch(SQLException e) {System.out.println("Errore nel selezionare i tipi...");}
         return tipi;
@@ -153,5 +182,6 @@ public class RestaurantManager {
             }
         }
         return -1;
-    }   
+    }  
+     
 }

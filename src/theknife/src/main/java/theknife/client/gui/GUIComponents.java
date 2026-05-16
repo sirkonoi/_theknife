@@ -1,5 +1,7 @@
 package theknife.client.gui;
 
+import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
 import javafx.geometry.Insets;
@@ -24,7 +26,10 @@ import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.shape.Circle;
 import javafx.stage.Stage;
+import theknife.Message;
 import theknife.client.ClientManager;
+import theknife.server.models.Guest;
+import theknife.server.models.Ristorante;
 import theknife.server.models.Utente;
 
 public class GUIComponents implements GUIBasics {
@@ -198,10 +203,9 @@ public class GUIComponents implements GUIBasics {
 
         return scroll;
     }
-    
 
     //rivedere x GUEST
-    public static HBox ristoranteCard(String nome, String citta, String cucina, int prezzo, double media, int numRec, Utente utente) {
+    public static HBox ristoranteCard(Ristorante ristorante, double media, int numRec, Utente utente, Guest guest, boolean guestHome, Stage stage, ClientManager client, Scene currentScene) {        
         HBox card = new HBox(16);
         card.setPadding(new Insets(12, 16, 12, 16));
         card.setAlignment(Pos.CENTER_LEFT);
@@ -210,9 +214,21 @@ public class GUIComponents implements GUIBasics {
         VBox info = new VBox(4);
         HBox.setHgrow(info, Priority.ALWAYS);
 
-        Label nomeLabel = new Label(nome);
+        Label nomeLabel = new Label(ristorante.getNome());
         nomeLabel.getStyleClass().add("card-titolo");
-        Label dettagliLabel = new Label(citta + " - " + cucina + " - " + prezzo + "€");
+        List<String> tipi = new ArrayList<>();
+        try {
+            Message res = client.send(new Message("getTipoRistorante", new Object[]{ristorante.getId()}));
+            tipi = (List<String>) res.getDati()[0];
+        } catch (ClassNotFoundException | IOException e1) { System.out.println("Errore nel caricare la lista dei tipi...");}        
+       
+        String listaTipi = String.join(", ", tipi); 
+
+        if (listaTipi.isEmpty()) {
+            listaTipi = "Nessuna cucina specificata";
+        }
+
+        Label dettagliLabel = new Label(ristorante.getLuogo().getIndirizzo() + " - " + listaTipi + " - " + ristorante.getFasciaPrezzo() + "€");
         dettagliLabel.getStyleClass().add("card-sottotitolo");
         Label stelleLabel = new Label("⭐ " + (media == 0.0 ? 0 : media) + " (" + numRec + (numRec == 1 ? " recensione)" : " recensioni)"));
         stelleLabel.getStyleClass().add("card-stelle");
@@ -224,15 +240,20 @@ public class GUIComponents implements GUIBasics {
 
         Button dettagliBtn = GUIComponents.blackBtn("Dettagli");
         actions.getChildren().add(dettagliBtn);
+        dettagliBtn.setOnAction(e -> {
+            if (guestHome) {
+                new RistoranteGUI(stage, client, guest, ristorante, currentScene).show();
+            } else {
+                new RistoranteGUI(stage, client, utente, ristorante, currentScene).show();
+            } 
+        });
 
-        if (utente != null) {
+        if (!guestHome) {
             Button prefBtn = GUIComponents.blackBtn("❤");
             actions.getChildren().add(prefBtn);
-
-            if ("utente".equals(utente.getRuolo())) {
-                Button recBtn = GUIComponents.greenBtn("Recensisci");
-                actions.getChildren().add(recBtn);
-            }
+            prefBtn.setOnAction(e -> {
+                //manca add preferiti
+            });
         }
 
         card.getChildren().addAll(info, actions);
