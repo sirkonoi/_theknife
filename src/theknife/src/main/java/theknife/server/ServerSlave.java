@@ -18,6 +18,7 @@ public class ServerSlave extends Thread {
     RestaurantManager restaurantManager;
     DBManager db;
     RecensioneManager recensioniManager;
+    PreferitiManager preferitiManager;
 
     public ServerSlave(Socket socket) {
         try {
@@ -28,6 +29,7 @@ public class ServerSlave extends Thread {
             usersManager = new UsersManager(db);
             restaurantManager = new RestaurantManager(db);
             recensioniManager = new RecensioneManager(db);
+            preferitiManager = new PreferitiManager(db);
             System.out.println("Creazione slave riuscita.");
         } catch (IOException ie) {
             System.out.println("Creazione slave fallita.");
@@ -100,6 +102,27 @@ public class ServerSlave extends Thread {
                     List<String> tipi = restaurantManager.getAllTipi();
                     result = new Message("OK", new Object[] { tipi });
                 }
+                if (request.getOp().equals("getPreferitiUtente")) {
+                    int idUtente = (int) request.getDati()[0];
+                    List<Ristorante> lista = preferitiManager.getPreferitiUtente(idUtente);
+                    result = new Message("OK", new Object[] { lista });
+                }   
+
+                if (request.getOp().equals("addPreferiti")) {
+                    int idUtente = (int) request.getDati()[0];
+                    int idRistorante = (int) request.getDati()[1];
+                    String nomeRistorante = (String) request.getDati()[2];
+                    boolean add = preferitiManager.addPreferiti(new Preferito(idUtente, idRistorante, nomeRistorante));
+                    if(add) {result= new Message("OK", new Object[] {});}
+                    else { result = new Message("ERROR", new Object[] { "add preferiti fallito..." });
+ }
+                }   
+                if (request.getOp().equals("removePreferiti")) {
+                    int idUtente    = (int) request.getDati()[0];
+                    int idRistorante = (int) request.getDati()[1];
+                    boolean ok = preferitiManager.removePreferiti(new Preferito(idUtente, idRistorante, ""));
+                    result = ok ? new Message("OK", new Object[]{}) : new Message("ERROR", new Object[]{"Rimozione fallita"});
+                }                                     
 
                 out.writeObject(result);
                 out.flush();

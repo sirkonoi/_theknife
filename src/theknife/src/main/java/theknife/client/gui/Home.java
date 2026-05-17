@@ -61,7 +61,10 @@ public class Home implements GUIBasics {
         profiloBtn.setOnAction(e -> {
             stage.setScene(profiloScene());
         });
-        Button preferitiBtn = GUIComponents.sidebarBtn("♡ Preferiti");
+        Button preferitiBtn = GUIComponents.sidebarBtn("❤ Preferiti");
+        preferitiBtn.setOnAction(e -> {
+            stage.setScene(preferitiScene());
+        });        
         Button recensioniBtn = GUIComponents.sidebarBtn("🖋️ Le mie recensioni");
 
         if (guestHome) {
@@ -193,4 +196,34 @@ public class Home implements GUIBasics {
         scene.getStylesheets().add(getClass().getResource("/style.css").toExternalForm());
         return scene;
     }
+
+    private Scene preferitiScene() {
+    try {
+        Message res = client.send(new Message("getPreferitiUtente", new Object[]{utente.getId()}));
+        List<Ristorante> lista = (List<Ristorante>) res.getDati()[0];
+
+        Scene currentScene = stage.getScene();
+        VBox pref = GUIComponents.preferitiView(lista, utente, stage, client, currentScene, () -> {
+            stage.setScene(preferitiScene());
+        });
+
+        Button backBtn = GUIComponents.blackBtn("↤ Indietro");
+        backBtn.setOnAction(e -> {
+            try { show(); } catch (SQLException | IOException ex) { ex.printStackTrace(); }
+        });
+        
+        pref.getChildren().add(backBtn);
+
+        double w = stage.isShowing() ? stage.getWidth() : WIDTH;
+        double h = stage.isShowing() ? stage.getHeight() : HEIGHT;
+        Scene scene = new Scene(pref, w, h);
+        scene.getStylesheets().add(getClass().getResource("/style.css").toExternalForm());
+        return scene;
+
+    } catch (ClassNotFoundException | IOException ex) {
+        System.out.println("Errore nel caricare i preferiti.");
+        GUIComponents.alert(Alert.AlertType.ERROR, "Errore", "Impossibile caricare i preferiti.");
+        return stage.getScene();
+    }
+}
 }

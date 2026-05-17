@@ -8,6 +8,7 @@ import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.Scene;
+import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.ComboBox;
@@ -252,12 +253,24 @@ public class GUIComponents implements GUIBasics {
             Button prefBtn = GUIComponents.blackBtn("❤");
             actions.getChildren().add(prefBtn);
             prefBtn.setOnAction(e -> {
-                //manca add preferiti
+            try {
+                Message res = client.send(new Message("addPreferiti", new Object[]{utente.getId(), ristorante.getId(), ristorante.getNome()}));
+                alert(Alert.AlertType.INFORMATION, "Preferiti", "Ristorante aggiunto!");                
+            } catch (ClassNotFoundException | IOException e1) { System.out.println("Errore nell'aggiungere il preferito..."); alert(Alert.AlertType.ERROR, "Errore", "Impossibile salvare il preferito.");}               
             });
         }
 
         card.getChildren().addAll(info, actions);
         return card;
+    }
+
+    public static Alert alert(Alert.AlertType tipo, String titolo,  String testo) {
+        Alert alert = new Alert(tipo);
+        alert.setTitle(titolo);
+        alert.setHeaderText(null);
+        alert.setContentText(testo);
+        alert.showAndWait();
+        return alert;
     }
 
     public static VBox sliderDistanza(Slider[] sliderRef) {
@@ -323,6 +336,73 @@ public class GUIComponents implements GUIBasics {
         HBox row = new HBox(8, emojiLabel, titoloLabel, testoLabel);
         row.setAlignment(Pos.CENTER_LEFT);
         return row;
+    }   
+    
+    public static VBox preferitiView(List<Ristorante> lista, Utente utente, Stage stage, ClientManager client, Scene currentScene, Runnable onRimuovi) {
+        VBox box = new VBox(16);
+        box.setPadding(new Insets(24));
+        box.setStyle("-fx-background-color: #1a1a1a;");
+
+        Label titolo = new Label("❤  I miei preferiti");
+        titolo.getStyleClass().add("preferiti-titolo");
+
+        VBox boxRistoranti = new VBox(10);
+
+        if (lista == null || lista.isEmpty()) {
+            Label empty = new Label("Nessun ristorante nei preferiti.");
+            empty.getStyleClass().add("preferiti-empty");
+            boxRistoranti.getChildren().add(empty);
+        } else {
+            for (Ristorante r : lista) {
+                HBox card = preferitoCard(r, utente, stage, client, currentScene, onRimuovi);
+                boxRistoranti.getChildren().add(card);
+            }
+        }
+
+        ScrollPane scroll = scrollPane(boxRistoranti);
+        VBox.setVgrow(scroll, Priority.ALWAYS);
+        box.getChildren().addAll(titolo, scroll);
+        return box;
+    }
+
+    public static HBox preferitoCard(Ristorante r, Utente utente, Stage stage, ClientManager client, Scene currentScene, Runnable onRimuovi) {
+        HBox card = new HBox(16);
+        card.setPadding(new Insets(12, 16, 12, 16));
+        card.setAlignment(Pos.CENTER_LEFT);
+        card.getStyleClass().add("ristorante-card");
+
+        VBox info = new VBox(4);
+        HBox.setHgrow(info, Priority.ALWAYS);
+
+        Label nomeLabel = new Label(r.getNome());
+        nomeLabel.getStyleClass().add("card-titolo");
+        
+        String citta = (r.getLuogo() != null) ? r.getLuogo().getCitta() : "Nessun luogo trovato.";
+        Label dettagliLabel = new Label(citta + " · " + r.getFasciaPrezzo() + "€");
+        dettagliLabel.getStyleClass().add("card-sottotitolo");
+        info.getChildren().addAll(nomeLabel, dettagliLabel);
+
+        HBox actions = new HBox(8);
+        actions.setAlignment(Pos.CENTER_RIGHT);
+
+        Button dettagliBtn = blackBtn("Dettagli");
+        dettagliBtn.setOnAction(e -> new RistoranteGUI(stage, client, utente, r, currentScene).show());
+
+        Button rimuoviBtn = blackBtn("🗑 Rimuovi");
+        rimuoviBtn.setOnAction(e -> {
+            try {
+                client.send(new Message("removePreferiti", new Object[]{utente.getId(), r.getId()}));
+                alert(Alert.AlertType.INFORMATION, "Preferiti", "Ristorante rimosso dai preferiti.");
+                onRimuovi.run();
+            } catch (ClassNotFoundException | IOException ex) {
+                System.out.println("Errore nella rimozione del preferito.");
+                alert(Alert.AlertType.ERROR, "Errore", "Impossibile rimuovere il ristorante.");
+            }
+        });
+
+        actions.getChildren().addAll(dettagliBtn, rimuoviBtn);
+        card.getChildren().addAll(info, actions);
+        return card;
     }    
 
     public static Scene makeScene(VBox box, double w, double h) {
