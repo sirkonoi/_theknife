@@ -1,9 +1,12 @@
 package theknife.server.models;
 
+import java.io.Serializable;
 import java.util.Date;
 
-public class Recensione {
+public class Recensione implements Serializable {
+    public final long serialVersionUID = 1;
     
+    private int id;
     private int idRecensore;
     private int idRistorante;
     private String testo;
@@ -11,7 +14,8 @@ public class Recensione {
     private Date data;
     private String risposta;
 
-    public Recensione(int idRecensore, int idRistorante, String testo, int stelle, Date data) {
+    public Recensione(int id, int idRecensore, int idRistorante, String testo, int stelle, Date data) {
+        this.id = id;
         this.idRecensore = idRecensore;
         this.idRistorante = idRistorante;
         this.testo = testo;
@@ -20,7 +24,8 @@ public class Recensione {
         risposta = null;
     }
 
-   public Recensione(int idRecensore, int idRistorante, String testo, int stelle, Date data, String risposta) {
+   public Recensione(int id, int idRecensore, int idRistorante, String testo, int stelle, Date data, String risposta) {
+        this.id = id;    
         this.idRecensore = idRecensore;
         this.idRistorante = idRistorante;
         this.testo = testo;
@@ -28,6 +33,9 @@ public class Recensione {
         this.data = data;
         this.risposta = risposta;
     }    
+
+    public int getId() { return id; }
+    public void setId(int id) { this.id = id; }
 
     public int getIdRecensore() { return idRecensore; }
     public void setIdRecensore(int idRecensore) { this.idRecensore = idRecensore; }

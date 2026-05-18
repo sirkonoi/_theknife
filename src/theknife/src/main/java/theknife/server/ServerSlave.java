@@ -53,17 +53,17 @@ public class ServerSlave extends Thread {
                     result = reg ? new Message("OK", new Object[] { usersManager.login((String) request.getDati()[2], Password.decrypt((String) request.getDati()[3])) }) : new Message("ERROR", new Object[] { "Registrazione fallita..." });
                 }
 
-                if (request.getOp().equals("guest")) {
+                else if (request.getOp().equals("guest")) {
                     result = new Message("OK_GUEST", new Object[] { new Guest((String) request.getDati()[0]) });
                 }
 
-                if (request.getOp().equals("filtra")) {
+                else if (request.getOp().equals("filtra")) {
                     Object[] filtri = request.getDati();
                     List<Ristorante> lista = restaurantManager.filtra(filtri);
                     result = new Message("OK", new Object[] { lista });
                 }
 
-                if (request.getOp().equals("cercaFromNome")) {
+                else if (request.getOp().equals("cercaFromNome")) {
                     String nome = (String) request.getDati()[0];
                     Ristorante ris = restaurantManager.cercaRistorante(nome);
                     if (ris == null) {
@@ -72,7 +72,7 @@ public class ServerSlave extends Thread {
                     result = new Message("OK", new Object[] { ris });
                 }
 
-                if (request.getOp().equals("cercaFromId")) {
+                else if (request.getOp().equals("cercaFromId")) {
                     int id = (int) request.getDati()[0];
                     Ristorante ris = restaurantManager.cercaRistorante(id);
                     if (ris == null) {
@@ -81,48 +81,74 @@ public class ServerSlave extends Thread {
                     result = new Message("OK", new Object[] { ris });
                 }                
 
-                if (request.getOp().equals("recensioniRistorante")) {
-                    int id = (int) request.getDati()[0];
-                    List<Recensione> lista = recensioniManager.getRecensioniRistorante(id);
-                    result = new Message("OK", new Object[] { lista });
-                }
-
-                if(request.getOp().equals("getTipoRistorante")) {
+                else if(request.getOp().equals("getTipoRistorante")) {
                     int id = (int) request.getDati()[0];
                     List<String> tipo = restaurantManager.getTipo(id);
                     result = new Message("OK", new Object[] { tipo });
                 }
-                
-                if (request.getOp().equals("infoRecensioni")) {
-                    int id = (int) request.getDati()[0];
-                    double[] info = recensioniManager.getInfoRecensioni(id);
-                    result = new Message("OK", new Object[] { info });
-                }
-                if (request.getOp().equals("getAllTipi")) {
+
+                else if (request.getOp().equals("getAllTipi")) {
                     List<String> tipi = restaurantManager.getAllTipi();
                     result = new Message("OK", new Object[] { tipi });
                 }
-                if (request.getOp().equals("getPreferitiUtente")) {
+
+                else if (request.getOp().equals("getPreferitiUtente")) {
                     int idUtente = (int) request.getDati()[0];
                     List<Ristorante> lista = preferitiManager.getPreferitiUtente(idUtente);
                     result = new Message("OK", new Object[] { lista });
                 }   
 
-                if (request.getOp().equals("addPreferiti")) {
+                else if (request.getOp().equals("addPreferiti")) {
                     int idUtente = (int) request.getDati()[0];
                     int idRistorante = (int) request.getDati()[1];
                     String nomeRistorante = (String) request.getDati()[2];
                     boolean add = preferitiManager.addPreferiti(new Preferito(idUtente, idRistorante, nomeRistorante));
                     if(add) {result= new Message("OK", new Object[] {});}
-                    else { result = new Message("ERROR", new Object[] { "add preferiti fallito..." });
- }
-                }   
-                if (request.getOp().equals("removePreferiti")) {
+                    else { result = new Message("ERROR", new Object[] { "add preferiti fallito..." });}
+                } 
+
+                else if (request.getOp().equals("removePreferiti")) {
                     int idUtente    = (int) request.getDati()[0];
                     int idRistorante = (int) request.getDati()[1];
                     boolean ok = preferitiManager.removePreferiti(new Preferito(idUtente, idRistorante, ""));
                     result = ok ? new Message("OK", new Object[]{}) : new Message("ERROR", new Object[]{"Rimozione fallita"});
-                }                                     
+                } 
+                
+                else if (request.getOp().equals("recensioniRistorante")) {
+                    int id = (int) request.getDati()[0];
+                    List<Recensione> lista = recensioniManager.getRecensioniRistorante(id);
+                    result = new Message("OK", new Object[] { lista });
+                }                
+                
+                else if (request.getOp().equals("infoRecensioni")) {
+                    int id = (int) request.getDati()[0];
+                    double[] info = recensioniManager.getInfoRecensioni(id);
+                    result = new Message("OK", new Object[] { info });
+                }                 
+                
+                if (request.getOp().equals("rispondiRecensione")) {
+                    int id = (int) request.getDati()[0];
+                    String testo = (String) request.getDati()[1];
+                    boolean ris = recensioniManager.addRisposta(id, testo);
+                    if(ris) { result = new Message("OK", new Object[] {});}
+                    else { result = new Message("ERROR", new Object[]{"Impossibile rispondere"});}
+                }
+
+                if (request.getOp().equals("aggiungiRecensione")) {
+                    Recensione rec = (Recensione) request.getDati()[0];
+                    boolean ris = recensioniManager.addRecensione(rec);
+                    if(ris) { result = new Message("OK", new Object[] {});}
+                    else { result = new Message("ERROR", new Object[]{"Aggiunta fallita"});}
+                }  
+
+                if (request.getOp().equals("eliminaRecensione")) {
+                    int id = (int) request.getDati()[0];
+                    boolean ris = recensioniManager.deleteRecensione(id);
+                    if(ris) { result = new Message("OK", new Object[] {});}
+                    else { result = new Message("ERROR", new Object[]{"Rimozione fallita"});}
+                }                
+                
+                
 
                 out.writeObject(result);
                 out.flush();

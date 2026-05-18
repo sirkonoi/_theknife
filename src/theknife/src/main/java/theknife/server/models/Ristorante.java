@@ -3,6 +3,8 @@ package theknife.server.models;
 import java.io.Serializable;
 
 public class Ristorante implements Serializable {
+    public final long serialVersionUID = 1;
+
     private int id;
     private String nome;
     private Luogo luogo;
@@ -10,7 +12,6 @@ public class Ristorante implements Serializable {
     private boolean delivery;
     private boolean prenotazione_online;
     private int ristoratore;
-    //private String[] tipiCucina;
 
     public Ristorante(int id, String nome, Luogo luogo, int fascia_prezzo, boolean delivery, boolean prenotazione_online, int ristoratore) {
         this.id = id;

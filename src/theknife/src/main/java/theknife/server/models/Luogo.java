@@ -4,7 +4,8 @@ import java.io.*;
 import java.net.*;
 
 public class Luogo implements Serializable {
-    
+    public final long serialVersionUID = 1;
+
     private int id;
     private String indirizzo;
     private String nazione;

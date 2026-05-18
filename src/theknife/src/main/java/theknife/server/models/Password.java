@@ -3,7 +3,8 @@ package theknife.server.models;
 import java.io.Serializable;
 
 public class Password implements Serializable {
-    private static final long serialVersionUID = 1;    
+    private static final long serialVersionUID = 1;   
+     
     private String encrypted;
 
     public Password(String value) {

@@ -203,7 +203,7 @@ public class Home implements GUIBasics {
         List<Ristorante> lista = (List<Ristorante>) res.getDati()[0];
 
         Scene currentScene = stage.getScene();
-        VBox pref = GUIComponents.preferitiView(lista, utente, stage, client, currentScene, () -> {
+        VBox pref = GUIComponents.preferiti(lista, utente, stage, client, currentScene, () -> {
             stage.setScene(preferitiScene());
         });
 

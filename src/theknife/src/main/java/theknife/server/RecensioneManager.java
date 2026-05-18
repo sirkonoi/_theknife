@@ -18,13 +18,23 @@ public class RecensioneManager {
         this.db = db;
     }
 
-    public boolean insert(Recensione recensione) throws SQLException {
+    public boolean addRecensione(Recensione recensione) throws SQLException {
         try {
+            if(recensioneExists(recensione.getIdRistorante(), recensione.getIdRecensore())) { return false; }
             db.insert(new Object[]{recensione.getIdRistorante(), recensione.getIdRecensore(), recensione.getStelle(), recensione.getTesto(), recensione.getData()}, columns, "recensione");            
             return true;
         } catch(SQLException e) {
             return false;
         }
+    }
+
+    public boolean deleteRecensione(int id) {
+        String query = "DELETE FROM recensione WHERE id = ?";
+        try(PreparedStatement statement = db.connection.prepareStatement(query)) {
+            statement.setInt(1, id);
+            statement.executeUpdate();
+            return true;
+        }catch(SQLException e) { return false; }
     }
 
     public Recensione getRecensione(int idRistorante, int idRecensore) {
@@ -35,7 +45,7 @@ public class RecensioneManager {
             statement.setInt(2, idRistorante);
             try(ResultSet rs = statement.executeQuery()) {
                 if(rs.next()) {
-                    return new Recensione(rs.getInt("utente"), rs.getInt("ristorante"), rs.getString("testo"), rs.getInt("stelle"), rs.getDate("data"), rs.getString("risposta"));
+                    return new Recensione(rs.getInt("id"), rs.getInt("utente"), rs.getInt("ristorante"), rs.getString("testo"), rs.getInt("stelle"), rs.getDate("data"), rs.getString("risposta"));
                 }
             }
         }catch(SQLException e) {}
@@ -49,7 +59,7 @@ public class RecensioneManager {
             statement.setInt(1, idRistorante);
             try(ResultSet rs = statement.executeQuery()) {
                 while(rs.next()) {
-                    recensioni.add(new Recensione(rs.getInt("utente"), rs.getInt("ristorante"), rs.getString("testo"), rs.getInt("stelle"), rs.getDate("data"), rs.getString("risposta")));
+                    recensioni.add(new Recensione(rs.getInt("id"), rs.getInt("utente"), rs.getInt("ristorante"), rs.getString("testo"), rs.getInt("stelle"), rs.getDate("data"), rs.getString("risposta")));
                 }
             }
         }catch(SQLException e) { e.printStackTrace(); }    
@@ -70,12 +80,20 @@ public class RecensioneManager {
     }
 
 
-    public boolean addRisposta(int idRistorante, int idRecensore, String risposta) {
-        String query = "UPDATE recensione SET risposta = ? WHERE utente = ? AND ristorante = ?";
+    public boolean addRisposta(int idRec, String risposta) {
+        String query = "UPDATE recensione SET risposta = ? WHERE id = ?";
         try (PreparedStatement statement = db.connection.prepareStatement(query)) {
            statement.setString(1, risposta);
-            statement.setInt(2, idRecensore);
-            statement.setInt(3, idRistorante);
+            statement.setInt(2, idRec);
+            statement.executeUpdate();
+            return true;
+        } catch(SQLException e) { return false; }
+    }
+    
+    public boolean deleteRisposta(int idRec) {
+        String query = "UPDATE recensione SET risposta = NULL WHERE id = ?";
+        try (PreparedStatement statement = db.connection.prepareStatement(query)) {
+            statement.setInt(1, idRec);
             statement.executeUpdate();
             return true;
         } catch(SQLException e) { return false; }

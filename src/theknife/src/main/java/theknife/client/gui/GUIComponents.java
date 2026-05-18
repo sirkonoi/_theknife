@@ -18,6 +18,7 @@ import javafx.scene.control.ScrollPane;
 import javafx.scene.control.Separator;
 import javafx.scene.control.Slider;
 import javafx.scene.control.TextField;
+import javafx.scene.control.Alert.AlertType;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.HBox;
@@ -30,6 +31,7 @@ import javafx.stage.Stage;
 import theknife.Message;
 import theknife.client.ClientManager;
 import theknife.server.models.Guest;
+import theknife.server.models.Recensione;
 import theknife.server.models.Ristorante;
 import theknife.server.models.Utente;
 
@@ -338,7 +340,7 @@ public class GUIComponents implements GUIBasics {
         return row;
     }   
     
-    public static VBox preferitiView(List<Ristorante> lista, Utente utente, Stage stage, ClientManager client, Scene currentScene, Runnable onRimuovi) {
+    public static VBox preferiti(List<Ristorante> lista, Utente utente, Stage stage, ClientManager client, Scene currentScene, Runnable onRimuovi) {
         VBox box = new VBox(16);
         box.setPadding(new Insets(24));
         box.setStyle("-fx-background-color: #1a1a1a;");
@@ -353,8 +355,8 @@ public class GUIComponents implements GUIBasics {
             empty.getStyleClass().add("preferiti-empty");
             boxRistoranti.getChildren().add(empty);
         } else {
-            for (Ristorante r : lista) {
-                HBox card = preferitoCard(r, utente, stage, client, currentScene, onRimuovi);
+            for (Ristorante ris : lista) {
+                HBox card = preferitoCard(ris, utente, stage, client, currentScene, onRimuovi);
                 boxRistoranti.getChildren().add(card);
             }
         }
@@ -377,7 +379,7 @@ public class GUIComponents implements GUIBasics {
         Label nomeLabel = new Label(r.getNome());
         nomeLabel.getStyleClass().add("card-titolo");
         
-        String citta = (r.getLuogo() != null) ? r.getLuogo().getCitta() : "Nessun luogo trovato.";
+        String citta = (r.getLuogo().getIndirizzo() != null) ? r.getLuogo().getIndirizzo() : "Nessun indirizzo trovato.";
         Label dettagliLabel = new Label(citta + " · " + r.getFasciaPrezzo() + "€");
         dettagliLabel.getStyleClass().add("card-sottotitolo");
         info.getChildren().addAll(nomeLabel, dettagliLabel);
@@ -388,7 +390,7 @@ public class GUIComponents implements GUIBasics {
         Button dettagliBtn = blackBtn("Dettagli");
         dettagliBtn.setOnAction(e -> new RistoranteGUI(stage, client, utente, r, currentScene).show());
 
-        Button rimuoviBtn = blackBtn("🗑 Rimuovi");
+        Button rimuoviBtn = blackBtn("Rimuovi");
         rimuoviBtn.setOnAction(e -> {
             try {
                 client.send(new Message("removePreferiti", new Object[]{utente.getId(), r.getId()}));
@@ -403,6 +405,135 @@ public class GUIComponents implements GUIBasics {
         actions.getChildren().addAll(dettagliBtn, rimuoviBtn);
         card.getChildren().addAll(info, actions);
         return card;
+    }    
+
+    //RISTORANTE GUI
+
+    public static VBox infoRistoranteBox(Ristorante ristorante) {
+        VBox card = new VBox(10);
+        card.setPadding(new Insets(16));
+        card.getStyleClass().add("info-card");
+        card.getChildren().addAll(infoRow("🌍", "Indirizzo", ristorante.getLuogo().getIndirizzo()), infoRow("💶", "Prezzo medio", ristorante.getFasciaPrezzo() + "€"), infoRow("🚚", "Delivery", ristorante.isDelivery() ? "✅ Effettuato" : "❌ Non effettuato"), infoRow("📅", "Prenotazione", ristorante.isPrenotazioneOnline() ? "✅ Disponibile" : "❌ Non disponibile"));
+        return card;
+    }
+
+    public static VBox recensioneBox(Recensione rec, boolean isOwner, boolean guestHome, Utente utente, ClientManager client, Runnable onRicarica) {
+        VBox card = new VBox(8);
+        card.setPadding(new Insets(12, 16, 12, 16));
+        card.getStyleClass().add("recensione-box");
+
+        Label autoreLabel = new Label("Utente #" + rec.getIdRecensore());
+        autoreLabel.getStyleClass().add("recensione-autore");
+        Label stelleLabel = new Label("⭐" + rec.getStelle() + " stelle");
+
+        Region spacer = new Region();
+        HBox.setHgrow(spacer, Priority.ALWAYS);
+        HBox top = new HBox(10, autoreLabel, spacer, stelleLabel);
+        top.setAlignment(Pos.CENTER_LEFT);
+
+        Label testoLabel = new Label(rec.getTesto());
+        testoLabel.getStyleClass().add("recensione-testo");
+        testoLabel.setWrapText(true);
+
+        card.getChildren().addAll(top, testoLabel);
+
+        if (rec.getRisposta() != null) {
+            VBox rispostaBox = new VBox(4);
+            rispostaBox.setPadding(new Insets(8, 12, 8, 12));
+            rispostaBox.getStyleClass().add("risposta-box");
+            Label rispostaTitle = new Label("Risposta del ristoratore:");
+            rispostaTitle.getStyleClass().add("risposta-titolo");
+            Label rispostaLabel = new Label(rec.getRisposta());
+            rispostaLabel.getStyleClass().add("risposta-testo");
+            rispostaLabel.setWrapText(true);
+            rispostaBox.getChildren().addAll(rispostaTitle, rispostaLabel);
+            card.getChildren().add(rispostaBox);
+        }
+
+        if (isOwner && rec.getRisposta() == null) {
+            TextField rispostaField = field("Scrivi una risposta...");
+            rispostaField.setMaxWidth(Double.MAX_VALUE);
+            Button rispondiBtn = greenBtn("Rispondi");
+            rispondiBtn.setOnAction(e -> {
+                String testo = rispostaField.getText().trim();
+                if (testo.isEmpty()) return;
+                try {
+                    client.send(new Message("rispondiRecensione", new Object[]{rec.getId(), testo}));
+                    alert(AlertType.INFORMATION, "Recensione", "Risposta aggiunta con successo.");
+                    onRicarica.run();
+                } catch (ClassNotFoundException | IOException ex) {
+                    System.out.println("Errore nell'inviare la risposta.");
+                    alert(AlertType.ERROR, "Recensione", "Impossibile aggiungere la risposta. Riprova.");
+
+                }
+            });
+            card.getChildren().addAll(rispostaField, rispondiBtn);
+        }
+
+        if (!guestHome && utente.getId() == rec.getIdRecensore()) {
+            Button eliminaBtn = blackBtn("Elimina");
+            eliminaBtn.setOnAction(e -> {
+                try {
+                    client.send(new Message("eliminaRecensione", new Object[]{rec.getId()}));
+                    alert(AlertType.INFORMATION, "Recensione", "Recensione eliminata con successo.");
+                    onRicarica.run();
+                } catch (ClassNotFoundException | IOException ex) {
+                    System.out.println("Errore nell'eliminare la recensione.");
+                    alert(AlertType.ERROR, "Recensione", "Impossibile eliminare la recensione. Riprova.");
+                }
+            });
+            card.getChildren().add(eliminaBtn);
+        }
+
+        return card;
+    }
+
+    public static VBox formRecensione(Ristorante ristorante, Utente utente, ClientManager client, Runnable onInvia) {
+        VBox form = new VBox(10);
+        form.setPadding(new Insets(16));
+        form.getStyleClass().add("form-recensione");
+
+        Label formTitle = new Label("Scrivi una recensione");
+        formTitle.getStyleClass().add("form-titolo");
+
+        ComboBox<Integer> stelle = new ComboBox<>();
+        stelle.getItems().addAll(1,2,3,4,5);
+        stelle.setPromptText("⭐ Stelle");
+        stelle.setMaxWidth(Double.MAX_VALUE);
+
+        TextField testoField = field("Come ti sei trovato..?");
+        testoField.setMaxWidth(Double.MAX_VALUE);
+
+        Label err = errorLabel();
+
+        Button inviaBtn = greenBtn("Invia la recensione");
+        inviaBtn.setMaxWidth(Double.MAX_VALUE);
+        inviaBtn.setOnAction(e -> {
+            if (stelle.getValue() == null || testoField.getText().trim().isEmpty()) {
+                showError(err, "Compila tutti i campi.");
+                return;
+            }
+            try {
+                Message res = client.send(new Message("addRecensione", new Object[]{new Recensione(0, utente.getId(), ristorante.getId(), testoField.getText().trim(), stelle.getValue(), new java.util.Date(), null)}));
+                if (res.getOp().equals("OK")) {
+                    stelle.setValue(null);
+                    testoField.clear();
+                    hideErr(err);
+                    onInvia.run();
+                    alert(AlertType.INFORMATION, "Recensione", "Recensione aggiunta con successo.");
+                } else {
+                    showError(err, "Hai già recensito questo ristorante.");
+                    alert(AlertType.ERROR, "Recensione", "Aggiunta recensione fallita... Hai gia' scritto una recensione per questo ristorante!");
+                }
+            } catch (ClassNotFoundException | IOException ex) {
+                showError(err, "Errore nell'inviare la recensione.");
+                alert(AlertType.ERROR, "Recensione", "Aggiunta recensione fallita...");
+
+            }
+        });
+
+        form.getChildren().addAll(formTitle, stelle, testoField, err, inviaBtn);
+        return form;
     }    
 
     public static Scene makeScene(VBox box, double w, double h) {
