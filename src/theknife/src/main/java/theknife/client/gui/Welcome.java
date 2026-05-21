@@ -10,6 +10,7 @@ import javafx.stage.*;
 import theknife.Message;
 import theknife.client.ClientManager;
 import theknife.server.models.Guest;
+import theknife.server.models.Luogo;
 import theknife.server.models.Password;
 import theknife.server.models.Utente;
 
@@ -67,7 +68,9 @@ public class Welcome implements GUIBasics {
         layout.setPadding(new Insets(40));
 
         TextField usernameField = GUIComponents.field("Username");
+        usernameField.setMaxWidth(220);
         PasswordField passwordField = GUIComponents.passField("Password");
+        passwordField.setMaxWidth(220);
         Label err = GUIComponents.errorLabel();
 
         Button loginBtn = GUIComponents.greenBtn("Accedi");
@@ -111,7 +114,7 @@ public class Welcome implements GUIBasics {
         TextField nomeField = GUIComponents.field("Nome");
         TextField cognomeField = GUIComponents.field("Cognome");
         TextField usernameField = GUIComponents.field("Username");
-        TextField domicilioField = GUIComponents.field("Domicilio (esempio: Viale Luigi Cadorna 10, Busto Arsizio, Italia");
+        TextField domicilioField = GUIComponents.field("Domicilio (esempio: Viale Luigi Cadorna 10, Busto Arsizio, Italia)");
         PasswordField pswField = GUIComponents.passField("Password");
         PasswordField pswConfField = GUIComponents.passField("Conferma password");
 
@@ -142,6 +145,13 @@ public class Welcome implements GUIBasics {
 
             if (nome.isEmpty() || cognome.isEmpty() || username.isEmpty() || domicilio.isEmpty() || psw.isEmpty() || pswConf.isEmpty()) {
                GUIComponents.showError(err, "Tutti i campi devono essere completati."); return;
+            }
+            try {
+                if(!Luogo.luogoExists(domicilio)) {
+                    GUIComponents.showError(err, "Inserisci un indirizzo valido..."); return;
+                }
+            } catch (IOException e1) {
+                e1.printStackTrace();
             }
             if (!psw.equals(pswConf)) { GUIComponents.showError(err, "Le password non coincidono..."); return; }
 
@@ -180,6 +190,13 @@ public class Welcome implements GUIBasics {
             GUIComponents.hideErr(err);
             String domicilio = domicilioField.getText().trim();
             if (domicilio.isEmpty()) { GUIComponents.showError(err, "Inserisci un domicilio."); return; }
+            try {
+                if(!Luogo.luogoExists(domicilio)) {
+                    GUIComponents.showError(err, "Inserisci un indirizzo valido..."); return;
+                }
+            } catch (IOException e1) {
+                e1.printStackTrace();
+            }            
             try {
                 new Home(stage, client, new Guest(domicilio)).show();
             } catch (SQLException | IOException ec) {

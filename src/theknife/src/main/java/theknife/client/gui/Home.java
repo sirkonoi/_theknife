@@ -57,7 +57,7 @@ public class Home implements GUIBasics {
         Separator sep1 = GUIComponents.separator();
         VBox.setMargin(sep1, new Insets(4, 0, 4, 0));
 
-        Button profiloBtn = GUIComponents.sidebarBtn("👤 Profilo");
+        Button profiloBtn = GUIComponents.sidebarBtn("Profilo");
         profiloBtn.setOnAction(e -> {
             stage.setScene(profiloScene());
         });
@@ -65,7 +65,7 @@ public class Home implements GUIBasics {
         preferitiBtn.setOnAction(e -> {
             stage.setScene(preferitiScene());
         });        
-        Button recensioniBtn = GUIComponents.sidebarBtn("🖋️ Le mie recensioni");
+        Button recensioniBtn = GUIComponents.sidebarBtn("Le mie recensioni");
 
         if (guestHome) {
             preferitiBtn.setDisable(true);
@@ -77,9 +77,13 @@ public class Home implements GUIBasics {
         if (!guestHome && utente.getRuolo().equals("ristoratore")) {
             Separator sep2 = GUIComponents.separator();
             VBox.setMargin(sep2, new Insets(4, 0, 4, 0));
-            Button ristorantiBtn = GUIComponents.sidebarBtn("👨‍🍳 I miei ristoranti");
+            Button ristorantiBtn = GUIComponents.sidebarBtn("I miei ristoranti");
             Button recRisBtn = GUIComponents.sidebarBtn("Recensioni ricevute");
             Button aggiungiRisBtn = GUIComponents.sidebarBtn("＋ Nuovo ristorante");
+            aggiungiRisBtn.setOnAction( e -> {
+                Scene currentScene = stage.getScene();
+                stage.setScene(newRestaurantScene(utente, currentScene));
+            });
             menu.getChildren().addAll(sep2, ristorantiBtn, recRisBtn, aggiungiRisBtn);
         }
 
@@ -125,8 +129,7 @@ public class Home implements GUIBasics {
                 res = client.send(new Message("infoRecensioni", new Object[]{ristorante.getId()}));
                 info = (double[]) res.getDati()[0];
             } catch (ClassNotFoundException | IOException e1) { System.out.println("Errore nel caricare la lista dei ristoranti vicini..");}            
-            boxRistoranti.getChildren().add(GUIComponents.ristoranteCard(ristorante, info[0], (int)info[1], utente, guest, guestHome, stage, client, stage.getScene()));        }
-        //bisogna inserire tipi ristorante
+            boxRistoranti.getChildren().add(GUIComponents.ristoranteCard(ristorante, info[0], (int)info[1], utente, guest, guestHome, stage, client, stage.getScene())); }
 
         ComboBox<String> filtroCucina = GUIComponents.tipiCucinaBox(tipi);
         ComboBox<String> filtroPrezzo = GUIComponents.prezzoBox(); 
@@ -226,4 +229,76 @@ public class Home implements GUIBasics {
         return stage.getScene();
     }
 }
+
+    private Scene newRestaurantScene(Utente user, Scene previousScene) {
+        VBox layout = new VBox(12);
+        layout.setAlignment(Pos.CENTER);
+        layout.setPadding(new Insets(40));
+
+        TextField nomeField = GUIComponents.field("Nome Ristorante");
+        TextField indirizzoField = GUIComponents.field("Indirizzo");
+        TextField cittaField = GUIComponents.field("Citta'");
+        TextField nazioneField = GUIComponents.field("Nazione");
+        TextField fasciaField = GUIComponents.field("Prezzo medio (es. 50)");
+        TextField tipoField = GUIComponents.field("Tipo cucina (es. Italiana, separa i tipi con virgola!)");
+        CheckBox delivery = new CheckBox("Delivery");
+        delivery.setStyle("-fx-text-fill: white;");
+        CheckBox booking  = new CheckBox("Prenotazione online");
+        booking.setStyle("-fx-text-fill: white;");
+        HBox selRow = new HBox(20, delivery, booking);
+        selRow.setAlignment(Pos.CENTER);
+
+        Label err = GUIComponents.errorLabel();
+
+        Button addBtn  = GUIComponents.greenBtn("Aggiungi ristorante");
+        Button backBtn = GUIComponents.blackBtn("↤ Indietro");
+        backBtn.setOnAction(e -> stage.setScene(previousScene));
+
+        addBtn.setOnAction(e -> {
+            GUIComponents.hideErr(err);
+            String nome = nomeField.getText().trim();
+            Luogo luogo = null;
+            try {
+                luogo = new Luogo(indirizzoField.getText().trim(), cittaField.getText().trim(), nazioneField.getText().trim());
+                if (!luogo.luogoExists()) {
+                    GUIComponents.showError(err, "Inserisci un indirizzo esistente..");
+                }
+            } catch (IOException e1) {
+                e1.printStackTrace();
+            }
+            int fascia = 0;
+            try {
+                fascia = Integer.parseInt(fasciaField.getText().trim().replace("€", "").trim());
+            } catch (NumberFormatException ne) {
+                GUIComponents.showError(err, "Inserisci un valore numerico per la fascia di prezzo. (Esempio 50)");
+                return;
+            }            
+            String tipo = tipoField.getText().trim();   
+            List<String> tipi = List.of(tipo.split(","));                    
+            boolean deliverySel = delivery.isSelected();
+            boolean bookingSel = booking.isSelected();
+
+            if (nome.isEmpty() || luogo == null || tipo.isEmpty()) {
+                GUIComponents.showError(err, "Compila tutti i campi.");
+                return;
+            } 
+
+            try {
+                Ristorante ris = new Ristorante(0, nome, luogo, fascia, deliverySel, bookingSel, utente.getId());
+                Message res = client.send(new Message("addRistorante", new Object[]{ris, tipi.toArray(new String[0])}));
+                if (res.getOp().equals("OK")) {
+                    GUIComponents.alert(Alert.AlertType.INFORMATION, "Ristorante", "Ristorante aggiunto con successo!");
+                    stage.setScene(previousScene);
+                } else {
+                    GUIComponents.showError(err, "Aggiunta fallita. Riprova.");
+                    GUIComponents.alert(Alert.AlertType.INFORMATION, "Ristorante", "Impossibile aggiungere il ristorante.");
+
+                }
+            } catch (IOException | ClassNotFoundException ex) {
+                GUIComponents.showError(err, "Errore di connessione...");
+            }
+        });
+        layout.getChildren().addAll(GUIComponents.miniLogo(), nomeField, indirizzoField, cittaField, nazioneField, fasciaField, tipoField, selRow, err, addBtn, backBtn);
+        return GUIComponents.makeScene(layout, WIDTH, HEIGHT);        
+    }
 }

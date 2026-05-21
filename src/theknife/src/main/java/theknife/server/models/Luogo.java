@@ -61,6 +61,42 @@ public class Luogo implements Serializable {
         return a; //a[0] è la latitudine e a[1] è longitudine
     }
 
+    public boolean luogoExists() throws IOException {
+        if (this.indirizzo == null || this.citta == null || this.nazione == null) {
+            return false;
+        }
+        String indirizzo = this.indirizzo + ", " + this.citta + ", " + this.nazione;
+
+        String urlString = "https://nominatim.openstreetmap.org/search?q=" + indirizzo.replace(" ", "+") + "&format=json&limit=1";
+        URL url = URI.create(urlString).toURL();
+        HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+
+        conn.setRequestProperty("User-Agent", "TheKnife/1.0");
+
+        try (BufferedReader rd = new BufferedReader(new InputStreamReader(conn.getInputStream()))) {
+            String line = rd.readLine();
+            return line != null && !line.equals("[]");
+        } catch (IOException e) {
+            return false;
+        }
+    } 
+
+    public static boolean luogoExists(String indirizzo) throws IOException {
+        if (indirizzo == null) { return false; }
+        String urlString = "https://nominatim.openstreetmap.org/search?q=" + indirizzo.replace(" ", "+") + "&format=json&limit=1";
+        URL url = URI.create(urlString).toURL();
+        HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+
+        conn.setRequestProperty("User-Agent", "TheKnife/1.0");
+
+        try (BufferedReader rd = new BufferedReader(new InputStreamReader(conn.getInputStream()))) {
+            String line = rd.readLine();
+            return line != null && !line.equals("[]");
+        } catch (IOException e) {
+            return false;
+        }
+    }
+
     public int getId() { return id;}
     public void setId(int id) { this.id = id;}
 

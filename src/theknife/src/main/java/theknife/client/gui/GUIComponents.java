@@ -71,7 +71,7 @@ public class GUIComponents implements GUIBasics {
         Button btn = new Button("⛔ Esci");
         btn.getStyleClass().add("logout-btn");
 
-        btn.setOnAction(e -> new Welcome(stage, client).show());
+        btn.setOnAction(e -> System.exit(0));
 
         return btn;
     }   
@@ -244,10 +244,11 @@ public class GUIComponents implements GUIBasics {
         Button dettagliBtn = GUIComponents.blackBtn("Dettagli");
         actions.getChildren().add(dettagliBtn);
         dettagliBtn.setOnAction(e -> {
+            Scene scene = stage.getScene();
             if (guestHome) {
-                new RistoranteGUI(stage, client, guest, ristorante, currentScene).show();
+                new RistoranteGUI(stage, client, guest, ristorante, scene).show();
             } else {
-                new RistoranteGUI(stage, client, utente, ristorante, currentScene).show();
+                new RistoranteGUI(stage, client, utente, ristorante, scene).show();
             } 
         });
 
@@ -474,9 +475,9 @@ public class GUIComponents implements GUIBasics {
             Button eliminaBtn = blackBtn("Elimina");
             eliminaBtn.setOnAction(e -> {
                 try {
-                    client.send(new Message("eliminaRecensione", new Object[]{rec.getId()}));
-                    alert(AlertType.INFORMATION, "Recensione", "Recensione eliminata con successo.");
+                    client.send(new Message("removeRecensione", new Object[]{rec.getId()}));
                     onRicarica.run();
+                    alert(AlertType.INFORMATION, "Recensione", "Recensione eliminata con successo.");
                 } catch (ClassNotFoundException | IOException ex) {
                     System.out.println("Errore nell'eliminare la recensione.");
                     alert(AlertType.ERROR, "Recensione", "Impossibile eliminare la recensione. Riprova.");
@@ -514,7 +515,7 @@ public class GUIComponents implements GUIBasics {
                 return;
             }
             try {
-                Message res = client.send(new Message("addRecensione", new Object[]{new Recensione(0, utente.getId(), ristorante.getId(), testoField.getText().trim(), stelle.getValue(), new java.util.Date(), null)}));
+                Message res = client.send(new Message("addRecensione", new Object[]{new Recensione(0, utente.getId(), ristorante.getId(), testoField.getText().trim(), stelle.getValue(), new java.util.Date(), null)}));                   
                 if (res.getOp().equals("OK")) {
                     stelle.setValue(null);
                     testoField.clear();

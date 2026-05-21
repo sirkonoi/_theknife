@@ -14,10 +14,37 @@ public class RestaurantManager {
         this.db = db;
     }
 
-    public void insert(Ristorante newRistorante) throws SQLException {
-        
-        Object[] values = {newRistorante.getNome(), newRistorante.getLuogo().getId(), newRistorante.getFasciaPrezzo(), newRistorante.isDelivery(), newRistorante.isPrenotazioneOnline(), newRistorante.getRistoratore()};
-        db.insert(values, columns, "ristorante");
+    public void addRistorante(Ristorante newRistorante, String[] tipiRistorante) throws SQLException {
+        int idLuogo = insertLuogo(newRistorante.getLuogo());
+        if (idLuogo == -1) throw new SQLException("Inserimento luogo fallito.");
+        newRistorante.getLuogo().setId(idLuogo);
+
+        String query = "INSERT INTO ristorante (nome, luogo, fascia_prezzo, delivery, prenotazione_online, ristoratore) VALUES (?, ?, ?, ?, ?, ?) RETURNING id";
+        int idRistorante;
+        try(PreparedStatement statement = db.connection.prepareStatement(query)) {
+            statement.setString(1, newRistorante.getNome());
+            statement.setInt(2, idLuogo);
+            statement.setInt(3, newRistorante.getFasciaPrezzo());
+            statement.setBoolean(4, newRistorante.isDelivery());
+            statement.setBoolean(5, newRistorante.isPrenotazioneOnline());
+            statement.setInt(6, newRistorante.getRistoratore());
+            ResultSet rs = statement.executeQuery();
+            if (!rs.next()) throw new SQLException("Inserimento ristorante fallito.");
+            idRistorante = rs.getInt("id");
+        }
+        for(String tipo : tipiRistorante) {
+        String queryTipo = "INSERT INTO tipocucina (tipo) VALUES (?)";
+            try(PreparedStatement ps = db.connection.prepareStatement(queryTipo)) {
+                ps.setString(1, tipo);
+                ps.executeUpdate();
+            }
+            String queryTipoRis = "INSERT INTO tipo_cucina_ristorante (ristorante, tipo_cucina) VALUES (?, ?)";
+            try(PreparedStatement ps = db.connection.prepareStatement(queryTipoRis)) {
+                ps.setInt(1, idRistorante);
+                ps.setString(2, tipo);
+                ps.executeUpdate();
+            }
+        }
     }
 
     public List<Ristorante> getRestaurantsList() throws SQLException, IOException {

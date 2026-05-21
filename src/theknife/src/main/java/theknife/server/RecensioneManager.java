@@ -12,19 +12,25 @@ public class RecensioneManager {
     
 
     DBManager db;
-    String[] columns = {"risorante", "utente", "stelle", "testo", "data", "risposta"};
-
+    
     public RecensioneManager(DBManager db) {
         this.db = db;
     }
 
-    public boolean addRecensione(Recensione recensione) throws SQLException {
-        try {
-            if(recensioneExists(recensione.getIdRistorante(), recensione.getIdRecensore())) { return false; }
-            db.insert(new Object[]{recensione.getIdRistorante(), recensione.getIdRecensore(), recensione.getStelle(), recensione.getTesto(), recensione.getData()}, columns, "recensione");            
+    public boolean addRecensione(Recensione recensione) {
+        if (recensioneExists(recensione.getIdRistorante(), recensione.getIdRecensore())) return false;
+        String query = "INSERT INTO recensione (ristorante, utente, stelle, testo, data) VALUES (?, ?, ?, ?, ?)";
+        try(PreparedStatement statement = db.connection.prepareStatement(query)) {
+            statement.setInt(1, recensione.getIdRistorante());
+            statement.setInt(2, recensione.getIdRecensore());
+            statement.setInt(3, recensione.getStelle());
+            statement.setString(4, recensione.getTesto());
+            statement.setDate(5, new java.sql.Date(recensione.getData().getTime()));
+            statement.executeUpdate();
             return true;
-        } catch(SQLException e) {
-            return false;
+        } catch(SQLException e) { 
+            e.printStackTrace();
+            return false; 
         }
     }
 
