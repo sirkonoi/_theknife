@@ -62,7 +62,9 @@ public class RistoranteGUI implements GUIBasics {
 
         leftCol.getChildren().addAll(backBtn, nomeLabel, GUIComponents.infoRistoranteBox(ristorante));
 
-        if (!guestHome) {
+        boolean isOwner = !guestHome && utente.getRuolo().equals("ristoratore") && utente.getId() == ristorante.getRistoratore();
+
+        if (!guestHome && !isOwner) {
             Button prefBtn = GUIComponents.blackBtn("❤ Aggiungi ai preferiti");
             prefBtn.setMaxWidth(Double.MAX_VALUE);
             prefBtn.setOnAction(e -> {
@@ -78,7 +80,6 @@ public class RistoranteGUI implements GUIBasics {
             leftCol.getChildren().add(prefBtn);
         }
 
-        boolean isOwner = !guestHome && utente.getRuolo().equals("ristoratore") && utente.getId() == ristorante.getRistoratore();
         if (!guestHome && !isOwner) {
             leftCol.getChildren().add(GUIComponents.formRecensione(ristorante, utente, client, this::show));
         }

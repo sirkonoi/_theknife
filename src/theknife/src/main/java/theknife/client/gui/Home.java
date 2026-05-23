@@ -78,13 +78,16 @@ public class Home implements GUIBasics {
             Separator sep2 = GUIComponents.separator();
             VBox.setMargin(sep2, new Insets(4, 0, 4, 0));
             Button ristorantiBtn = GUIComponents.sidebarBtn("I miei ristoranti");
-            Button recRisBtn = GUIComponents.sidebarBtn("Recensioni ricevute");
+            ristorantiBtn.setOnAction(e -> {
+                Scene currentScene = stage.getScene();
+                stage.setScene(mieiRistorantiScene(utente, currentScene));
+            });
             Button aggiungiRisBtn = GUIComponents.sidebarBtn("＋ Nuovo ristorante");
             aggiungiRisBtn.setOnAction( e -> {
                 Scene currentScene = stage.getScene();
                 stage.setScene(newRestaurantScene(utente, currentScene));
             });
-            menu.getChildren().addAll(sep2, ristorantiBtn, recRisBtn, aggiungiRisBtn);
+            menu.getChildren().addAll(sep2, ristorantiBtn, aggiungiRisBtn);
         }
 
         Region spacer = GUIComponents.spacer();
@@ -139,29 +142,51 @@ public class Home implements GUIBasics {
 
         Button cercaBtn = GUIComponents.greenBtn("Cerca");
         cercaBtn.setOnAction(e -> {
+            String testoCerca = cercaField.getText().trim();
+            if (!testoCerca.isEmpty()) {
+                try {
+                    Message res2 = client.send(new Message("cercaFromNome", new Object[]{testoCerca}));
+                    boxRistoranti.getChildren().clear();
+                    if (res2.getOp().equals("OK")) {
+                        Ristorante ris = (Ristorante) res2.getDati()[0];
+                        double[] info = new double[]{0, 0};
+                        try {
+                            Message risInfo = client.send(new Message("infoRecensioni", new Object[]{ris.getId()}));
+                            info = (double[]) risInfo.getDati()[0];
+                        } catch (ClassNotFoundException | IOException ex) {}
+                        boxRistoranti.getChildren().add(GUIComponents.ristoranteCard(ris, info[0], (int)info[1], utente, guest, guestHome, stage, client, stage.getScene()));
+                    } else {
+                        Label noRis = new Label("Nessun ristorante trovato.");
+                        noRis.getStyleClass().add("preferiti-empty");
+                        boxRistoranti.getChildren().add(noRis);
+                    }
+                } catch (ClassNotFoundException | IOException ex) {
+                    System.out.println("Errore nella ricerca per nome.");
+                }
+                return;
+            }
+
             String cucina = (filtroCucina.getValue() == null || filtroCucina.getValue().equals("Nessuna")) ? null : filtroCucina.getValue();
             String prezzo = (filtroPrezzo.getValue() == null || filtroPrezzo.getValue().equals("Nessuna")) ? null : filtroPrezzo.getValue();
             Boolean deliveryVal = delivery.isSelected() ? true : null;
             Boolean prenotazioneVal = prenotazione.isSelected() ? true : null;
             int raggio = (int) slider[0].getValue();
-
             try {
                 Message res2 = client.send(new Message("filtra", new Object[]{raggio, cucina, prezzo, deliveryVal, prenotazioneVal, indirizzo}));
                 List<Ristorante> nuova = (List<Ristorante>) res2.getDati()[0];
-
                 boxRistoranti.getChildren().clear();
-
                 for (Ristorante ristorante : nuova) {
-                    double[] info = null;
+                    double[] info = new double[]{0, 0};
                     try {
                         Message risInfo = client.send(new Message("infoRecensioni", new Object[]{ristorante.getId()}));
                         info = (double[]) risInfo.getDati()[0];
-                    } catch (ClassNotFoundException | IOException ex) { info = new double[]{0, 0}; }
-                    boxRistoranti.getChildren().add(GUIComponents.ristoranteCard(ristorante, info[0], (int)info[1], utente, guest, guestHome, stage, client, stage.getScene()));                }
+                    } catch (ClassNotFoundException | IOException ex) {}
+                    boxRistoranti.getChildren().add(GUIComponents.ristoranteCard(ristorante, info[0], (int)info[1], utente, guest, guestHome, stage, client, stage.getScene()));
+                }
             } catch (ClassNotFoundException | IOException ex) {
                 System.out.println("Errore, il filtraggio non e' riuscito...");
             }
-        });  
+        }); 
 
         topBar.getChildren().addAll(cercaField, distanzaBox, filtroCucina, filtroPrezzo, delivery, prenotazione, cercaBtn);
 
@@ -299,6 +324,36 @@ public class Home implements GUIBasics {
             }
         });
         layout.getChildren().addAll(GUIComponents.miniLogo(), nomeField, indirizzoField, cittaField, nazioneField, fasciaField, tipoField, selRow, err, addBtn, backBtn);
-        return GUIComponents.makeScene(layout, WIDTH, HEIGHT);        
+        return GUIComponents.makeScene(layout, previousScene.getWidth(), previousScene.getHeight());        
     }
+
+    private Scene mieiRistorantiScene(Utente utente, Scene currentScene) {
+    try {
+        Message res = client.send(new Message("getRistorantiUtente", new Object[]{utente.getId()}));
+        List<Ristorante> lista = (List<Ristorante>) res.getDati()[0];
+
+        Scene currentSceneRis = stage.getScene();
+        VBox pref = GUIComponents.mieiRistoranti(lista, utente, stage, client, currentScene, () -> {
+            stage.setScene(preferitiScene());
+        });
+
+        Button backBtn = GUIComponents.blackBtn("↤ Indietro");
+        backBtn.setOnAction(e -> {
+            try { show(); } catch (SQLException | IOException ex) { ex.printStackTrace(); }
+        });
+        
+        pref.getChildren().add(backBtn);
+
+        double w = stage.isShowing() ? stage.getWidth() : WIDTH;
+        double h = stage.isShowing() ? stage.getHeight() : HEIGHT;
+        Scene scene = new Scene(pref, w, h);
+        scene.getStylesheets().add(getClass().getResource("/style.css").toExternalForm());
+        return scene;
+
+    } catch (ClassNotFoundException | IOException ex) {
+        System.out.println("Errore nel caricare i tuoi ristoranti.");
+        GUIComponents.alert(Alert.AlertType.ERROR, "Errore", "Impossibile caricare i ristoranti.");
+        return stage.getScene();
+    }
+}    
 }

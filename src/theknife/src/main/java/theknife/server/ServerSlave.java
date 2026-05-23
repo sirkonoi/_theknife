@@ -57,6 +57,12 @@ public class ServerSlave extends Thread {
                     result = new Message("OK_GUEST", new Object[] { new Guest((String) request.getDati()[0]) });
                 }
 
+                else if (request.getOp().equals("getUtenteFromId")) {
+                    int id = (int) request.getDati()[0];
+                    Utente utente = usersManager.getUserFromID(id);
+                    result = new Message("OK", new Object[] { utente });
+                }                   
+
                 else if(request.getOp().equals("addRistorante")) {
                     Ristorante ris = (Ristorante) request.getDati()[0];
                     String[] tipiRis = (String[]) request.getDati()[1];
@@ -76,7 +82,9 @@ public class ServerSlave extends Thread {
                     if (ris == null) {
                         result = new Message("ERROR", new Object[] { "ricerca fallita..." });
                     }
-                    result = new Message("OK", new Object[] { ris });
+                    else {
+                        result = new Message("OK", new Object[] { ris });
+                    }                        
                 }
 
                 else if (request.getOp().equals("cercaFromId")) {
@@ -98,6 +106,12 @@ public class ServerSlave extends Thread {
                     List<String> tipi = restaurantManager.getAllTipi();
                     result = new Message("OK", new Object[] { tipi });
                 }
+
+                else if (request.getOp().equals("getRistorantiUtente")) {
+                    int id = (int) request.getDati()[0];
+                    List<Ristorante> lista = restaurantManager.getRistorantiUtente(id);
+                    result = new Message("OK", new Object[] { lista });
+                }                  
 
                 else if (request.getOp().equals("getPreferitiUtente")) {
                     int idUtente = (int) request.getDati()[0];
@@ -140,6 +154,12 @@ public class ServerSlave extends Thread {
                     if(ris) { result = new Message("OK", new Object[] {});}
                     else { result = new Message("ERROR", new Object[]{"Impossibile rispondere"});}
                 }
+                else if (request.getOp().equals("eliminaRisposta")) {
+                    int id = (int) request.getDati()[0];
+                    boolean ris = recensioniManager.deleteRisposta(id);
+                    if(ris) { result = new Message("OK", new Object[] {});}
+                    else { result = new Message("ERROR", new Object[]{"Impossibile eliminare"});}
+                }                
 
                 else if (request.getOp().equals("addRecensione")) {
                     Recensione rec = (Recensione) request.getDati()[0];

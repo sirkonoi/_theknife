@@ -47,7 +47,7 @@ public class RestaurantManager {
         }
     }
 
-    public List<Ristorante> getRestaurantsList() throws SQLException, IOException {
+    public List<Ristorante> getListaRistoranti() throws SQLException, IOException {
         List<Ristorante> lista = new ArrayList<>();
 
         try(PreparedStatement statement = db.connection.prepareStatement("SELECT * FROM ristorante")) {
@@ -59,6 +59,21 @@ public class RestaurantManager {
             lista.add(ris);
             }
         }
+        return lista;
+    }
+
+    public List<Ristorante> getRistorantiUtente(int id) throws IOException {
+        List<Ristorante> lista = new ArrayList<>();
+        String query = "SELECT ris.*, luogo.nazione, luogo.citta, luogo.indirizzo, luogo.latitudine, luogo.longitudine FROM ristorante ris JOIN luogo ON ris.luogo = luogo.id  WHERE ristoratore = ?";
+
+        try(PreparedStatement statement = db.connection.prepareStatement(query)) {
+            statement.setInt(1, id);
+            ResultSet rs = statement.executeQuery();
+            while (rs.next()) {
+                Luogo luogo = findLuogo(rs.getInt("luogo"));
+                lista.add(new Ristorante(rs.getInt("id"), rs.getString("nome"), luogo, rs.getInt("fascia_prezzo"), rs.getBoolean("delivery"), rs.getBoolean("prenotazione_online"), rs.getInt("ristoratore")));             
+            }
+        }catch(SQLException e) {}
         return lista;
     }
 
