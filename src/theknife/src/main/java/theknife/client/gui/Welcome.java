@@ -32,14 +32,6 @@ public class Welcome implements GUIBasics {
         stage.show();
     }
 
-    private Scene makeScene(VBox box, double weight, double height) {
-        StackPane container = new StackPane(box);
-        StackPane.setAlignment(box, Pos.CENTER);
-        Scene scene = new Scene(container, weight, height);
-        scene.getStylesheets().add(getClass().getResource("/style.css").toExternalForm());
-        return scene;
-    }
-
     private Scene welcomeScene() {
         VBox layout = new VBox(16);
         layout.setAlignment(Pos.CENTER);
@@ -59,7 +51,7 @@ public class Welcome implements GUIBasics {
         reg.setAlignment(Pos.CENTER);
 
         layout.getChildren().addAll(GUIComponents.logo(), loginBtn, guestBtn, reg);
-        return makeScene(layout, WIDTH, HEIGHT);
+        return GUIComponents.makeScene(layout, WIDTH, HEIGHT);
     }
 
     private Scene loginScene() {
@@ -78,7 +70,7 @@ public class Welcome implements GUIBasics {
         backBtn.setOnAction(e -> stage.setScene(welcomeScene()));
 
         loginBtn.setOnAction(e -> {
-            GUIComponents.hideErr(err);
+            GUIComponents.hideError(err);
             String user = usernameField.getText().trim();
             String psw = passwordField.getText();
             if (user.isEmpty() || psw.isEmpty()) { GUIComponents.showError(err, "Tutti i campi devono essere completati."); return; }
@@ -103,7 +95,7 @@ public class Welcome implements GUIBasics {
         reg.setAlignment(Pos.CENTER);
 
         layout.getChildren().addAll(GUIComponents.miniLogo(), usernameField, passwordField, err, loginBtn, backBtn, reg);
-        return makeScene(layout, WIDTH, HEIGHT);
+        return GUIComponents.makeScene(layout, WIDTH, HEIGHT);
     }
 
     private Scene registerScene() {
@@ -134,7 +126,7 @@ public class Welcome implements GUIBasics {
         backBtn.setOnAction(e -> stage.setScene(welcomeScene()));
 
         regBtn.setOnAction(e -> {
-            GUIComponents.hideErr(err);
+            GUIComponents.hideError(err);
             String nome = nomeField.getText().trim();
             String cognome = cognomeField.getText().trim();
             String username = usernameField.getText().trim();
@@ -187,7 +179,7 @@ public class Welcome implements GUIBasics {
         backBtn.setOnAction(e -> stage.setScene(welcomeScene()));
 
         continueBtn.setOnAction(e -> {
-            GUIComponents.hideErr(err);
+            GUIComponents.hideError(err);
             String domicilio = domicilioField.getText().trim();
             if (domicilio.isEmpty()) { GUIComponents.showError(err, "Inserisci un domicilio."); return; }
             try {
@@ -205,6 +197,6 @@ public class Welcome implements GUIBasics {
         });
 
         layout.getChildren().addAll(GUIComponents.miniLogo(), titleLabel, domicilioField, err, continueBtn, backBtn);
-        return makeScene(layout, WIDTH, HEIGHT);
+        return GUIComponents.makeScene(layout, WIDTH, HEIGHT);
     }
 }

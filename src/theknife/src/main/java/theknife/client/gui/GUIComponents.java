@@ -1,12 +1,10 @@
 package theknife.client.gui;
 
 import java.io.IOException;
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
-import javafx.geometry.Insets;
-import javafx.geometry.Pos;
+import javafx.geometry.*;
 import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
@@ -37,6 +35,7 @@ import theknife.server.models.Ristorante;
 import theknife.server.models.Utente;
 
 public class GUIComponents implements GUIBasics {
+
     public static TextField field(String text) {
         TextField f = new TextField();
         f.setPromptText(text);
@@ -67,13 +66,10 @@ public class GUIComponents implements GUIBasics {
         return b;
     }
 
-    public static Button logoutButton(Stage stage, ClientManager client) {
-
+    public static Button logoutButton() {
         Button btn = new Button("⛔ Esci");
         btn.getStyleClass().add("logout-btn");
-
         btn.setOnAction(e -> System.exit(0));
-
         return btn;
     }   
     
@@ -99,7 +95,7 @@ public class GUIComponents implements GUIBasics {
         l.setManaged(true);
     }
 
-    public static void hideErr(Label l) {
+    public static void hideError(Label l) {
         l.setVisible(false);
         l.setManaged(false);
     }
@@ -112,7 +108,7 @@ public class GUIComponents implements GUIBasics {
             img.setFitHeight(70);
             img.setPreserveRatio(true);
             box.getChildren().add(img);
-        } catch (Exception ignored) {}
+        } catch (Exception e) {}
         return box;
     }
     
@@ -124,7 +120,7 @@ public class GUIComponents implements GUIBasics {
             img.setFitHeight(30);
             img.setPreserveRatio(true);
             box.getChildren().add(img);
-        } catch (Exception ignored) {}
+        } catch (Exception e) {}
         return box;
     }  
     
@@ -135,21 +131,16 @@ public class GUIComponents implements GUIBasics {
     }
 
     public static Label username(String username) {
-
         Label label = new Label(username);
         label.getStyleClass().add("username");
-
         label.setWrapText(true);
         label.setMaxWidth(Double.MAX_VALUE);
-
         return label;
     }    
 
     public static Separator separator() {
-
         Separator sep = new Separator();
         sep.getStyleClass().add("separator");
-
         return sep;
     }
     
@@ -160,55 +151,39 @@ public class GUIComponents implements GUIBasics {
     }   
     
     public static ComboBox<String> tipiCucinaBox(List<String> lista) {
-
         ComboBox<String> tipi = new ComboBox<>();
         tipi.setPromptText("Cucina");
         tipi.setPrefWidth(110);
-
         tipi.getItems().add("Nessuna");
         tipi.getItems().setAll(lista);
-
         tipi.getStyleClass().add("combobox");
-
         return tipi;
     }  
     
     public static ComboBox<String> prezzoBox() {
-
         ComboBox<String> prezzo = new ComboBox<>();
         prezzo.setPromptText("Prezzo");
         prezzo.setPrefWidth(100);
-
         prezzo.getItems().addAll("< 20€", "20-50€", "50-100€", "> 100€");
-
         prezzo.getStyleClass().add("combobox");
-
         return prezzo;
     }  
     
     public static CheckBox filterCheckBox(String testo) {
-
         CheckBox check = new CheckBox(testo);
         check.getStyleClass().add("checkbox");
-
         return check;
     }  
     
     public static ScrollPane scrollPane(Node content) {
-
         ScrollPane scroll = new ScrollPane(content);
-
         scroll.setFitToWidth(true);
         scroll.setHbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
-
         scroll.getStyleClass().add("scroll");
-
         VBox.setVgrow(scroll, Priority.ALWAYS);
-
         return scroll;
     }
 
-    //rivedere x GUEST
     public static HBox ristoranteCard(Ristorante ristorante, double media, int numRec, Utente utente, Guest guest, boolean guestHome, Stage stage, ClientManager client, Scene currentScene) {        
         HBox card = new HBox(16);
         card.setPadding(new Insets(12, 16, 12, 16));
@@ -410,9 +385,7 @@ public class GUIComponents implements GUIBasics {
 
         card.getChildren().addAll(info, actions);
         return card;
-}   
-
-    //RISTORANTE GUI
+    }   
 
     public static VBox infoRistoranteBox(Ristorante ristorante) {
         VBox card = new VBox(10);
@@ -509,7 +482,6 @@ public class GUIComponents implements GUIBasics {
             });
             card.getChildren().add(eliminaBtn);
         }
-
         return card;
     }
 
@@ -543,7 +515,7 @@ public class GUIComponents implements GUIBasics {
                 if (res.getOp().equals("OK")) {
                     stelle.setValue(null);
                     testoField.clear();
-                    hideErr(err);
+                    hideError(err);
                     invia.run();
                     alert(AlertType.INFORMATION, "Recensione", "Recensione aggiunta con successo.");
                 } else {
@@ -586,6 +558,91 @@ public class GUIComponents implements GUIBasics {
         VBox.setVgrow(scroll, Priority.ALWAYS);
         box.getChildren().addAll(titolo, scroll);
         return box;
+    }
+    
+    public static VBox mieRecensioni(List<Recensione> lista, List<Ristorante> ristoranti, Utente utente, Stage stage, ClientManager client, Runnable aggiorna) {
+        VBox box = new VBox(16);
+        box.setPadding(new Insets(24));
+        box.setStyle("-fx-background-color: #1a1a1a;");
+
+        Label titolo = new Label("Le mie recensioni");
+        titolo.getStyleClass().add("preferiti-titolo");
+
+        VBox boxRecensioni = new VBox(10);
+
+        if (lista == null || lista.isEmpty()) {
+            Label empty = new Label("Non hai ancora scritto recensioni...");
+            empty.getStyleClass().add("preferiti-empty");
+            boxRecensioni.getChildren().add(empty);
+        } else {
+            for (int i = 0; i < lista.size(); i++) {
+                Recensione rec = lista.get(i);
+                Ristorante ris = ristoranti.get(i);
+                boxRecensioni.getChildren().add(miaRecensioneCard(rec, ris, utente, stage, client, aggiorna));
+            }
+        }
+
+        ScrollPane scroll = scrollPane(boxRecensioni);
+        VBox.setVgrow(scroll, Priority.ALWAYS);
+        box.getChildren().addAll(titolo, scroll);
+        return box;
+    }
+
+    public static VBox miaRecensioneCard(Recensione rec, Ristorante ris, Utente utente, Stage stage, ClientManager client, Runnable aggiorna) {
+        VBox card = new VBox(8);
+        card.setPadding(new Insets(12, 16, 12, 16));
+        card.getStyleClass().add("recensione-box");
+
+        Label risLabel = new Label(ris.getNome());
+        risLabel.getStyleClass().add("card-titolo");
+        Label stelleLabel = new Label("⭐" + rec.getStelle() + " stelle");
+        Region spacer = new Region();
+        HBox.setHgrow(spacer, Priority.ALWAYS);
+        HBox top = new HBox(10, risLabel, spacer, stelleLabel);
+        top.setAlignment(Pos.CENTER_LEFT);
+
+        Label testoLabel = new Label(rec.getTesto());
+        testoLabel.getStyleClass().add("recensione-testo");
+        testoLabel.setWrapText(true);
+
+        card.getChildren().addAll(top, testoLabel);
+
+        if (rec.getRisposta() != null) {
+            VBox rispostaBox = new VBox(4);
+            rispostaBox.setPadding(new Insets(8, 12, 8, 12));
+            rispostaBox.getStyleClass().add("risposta-box");
+            Label rispostaTitle = new Label("Risposta del ristoratore:");
+            rispostaTitle.getStyleClass().add("risposta-titolo");
+            Label rispostaLabel = new Label(rec.getRisposta());
+            rispostaLabel.getStyleClass().add("risposta-testo");
+            rispostaLabel.setWrapText(true);
+            rispostaBox.getChildren().addAll(rispostaTitle, rispostaLabel);
+            card.getChildren().add(rispostaBox);
+        }
+
+        HBox actions = new HBox(8);
+        actions.setAlignment(Pos.CENTER_LEFT);
+
+        Button dettagliBtn = blackBtn("Dettagli ristorante");
+        dettagliBtn.setOnAction(e -> {
+            Scene scena = stage.getScene();
+            new RistoranteGUI(stage, client, utente, ris, scena).show();
+        });
+
+        Button eliminaBtn = blackBtn("Elimina");
+        eliminaBtn.setOnAction(e -> {
+            try {
+                client.send(new Message("removeRecensione", new Object[]{rec.getId()}));
+                alert(Alert.AlertType.INFORMATION, "Recensione", "Recensione eliminata con successo.");
+                aggiorna.run();
+            } catch (ClassNotFoundException | IOException ex) {
+                alert(Alert.AlertType.ERROR, "Errore", "Impossibile eliminare la recensione....");
+            }
+        });
+
+        actions.getChildren().addAll(dettagliBtn, eliminaBtn);
+        card.getChildren().add(actions);
+        return card;
     }    
 
     public static Scene makeScene(VBox box, double w, double h) {

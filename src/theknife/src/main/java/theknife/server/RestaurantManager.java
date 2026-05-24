@@ -156,7 +156,7 @@ public class RestaurantManager {
     }
 
     public Ristorante cercaRistorante(int id) {
-        String query = "SELECT ris.*, luogo.nazione, luogo.citta, luogo.indirizzo, luogo.latitudine, luogo.longitudine FROM ristorante ris JOIN luogo ON ris.luogo = luogo.id  WHERE id = ?";
+        String query = "SELECT ris.*, luogo.nazione, luogo.citta, luogo.indirizzo, luogo.latitudine, luogo.longitudine FROM ristorante ris JOIN luogo ON ris.luogo = luogo.id  WHERE ris.id = ?";
         try(PreparedStatement statement = db.connection.prepareStatement(query)) {
             statement.setInt(1, id);
             try(ResultSet rs = statement.executeQuery()) {

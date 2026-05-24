@@ -4,6 +4,7 @@ import java.io.*;
 import java.net.*;
 import java.sql.Date;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.List;
 
 import theknife.server.models.*;
@@ -139,6 +140,16 @@ public class ServerSlave extends Thread {
                     int id = (int) request.getDati()[0];
                     List<Recensione> lista = recensioniManager.getRecensioniRistorante(id);
                     result = new Message("OK", new Object[] { lista });
+                }                
+
+                else if (request.getOp().equals("getRecensioniUtente")) {
+                    int id = (int) request.getDati()[0];
+                    List<Recensione> recensioni = recensioniManager.getRecensioniUtente(id);
+                    List<Ristorante> ristoranti = new ArrayList<>();
+                    for (Recensione rec : recensioni) {
+                        ristoranti.add(restaurantManager.cercaRistorante(rec.getIdRistorante()));
+                    }
+                    result = new Message("OK", new Object[]{recensioni, ristoranti});
                 }                
                 
                 else if (request.getOp().equals("infoRecensioni")) {

@@ -7,7 +7,6 @@ import javafx.geometry.*;
 import javafx.scene.*;
 import javafx.scene.control.*;
 import javafx.scene.layout.*;
-import javafx.scene.shape.*;
 import javafx.stage.*;
 import theknife.*;
 import theknife.client.ClientManager;
@@ -66,6 +65,10 @@ public class Home implements GUIBasics {
             stage.setScene(preferitiScene());
         });        
         Button recensioniBtn = GUIComponents.sidebarBtn("Le mie recensioni");
+        recensioniBtn.setOnAction( e -> {
+            Scene currentScene = stage.getScene();
+            stage.setScene(mieRecensioniScene(currentScene));
+        });
 
         if (guestHome) {
             preferitiBtn.setDisable(true);
@@ -91,7 +94,7 @@ public class Home implements GUIBasics {
         }
 
         Region spacer = GUIComponents.spacer();
-        Button logoutBtn = GUIComponents.logoutButton(stage, client);
+        Button logoutBtn = GUIComponents.logoutButton();
 
         sidebar.getChildren().addAll(avatar, usernameLabel, sep1, menu, spacer, logoutBtn);
 
@@ -280,7 +283,7 @@ public class Home implements GUIBasics {
         backBtn.setOnAction(e -> stage.setScene(previousScene));
 
         addBtn.setOnAction(e -> {
-            GUIComponents.hideErr(err);
+            GUIComponents.hideError(err);
             String nome = nomeField.getText().trim();
             Luogo luogo = null;
             try {
@@ -327,19 +330,19 @@ public class Home implements GUIBasics {
         return GUIComponents.makeScene(layout, previousScene.getWidth(), previousScene.getHeight());        
     }
 
-    private Scene mieiRistorantiScene(Utente utente, Scene currentScene) {
+    private Scene mieiRistorantiScene(Utente utente, Scene previousScene) {
     try {
         Message res = client.send(new Message("getRistorantiUtente", new Object[]{utente.getId()}));
         List<Ristorante> lista = (List<Ristorante>) res.getDati()[0];
 
         Scene currentSceneRis = stage.getScene();
-        VBox pref = GUIComponents.mieiRistoranti(lista, utente, stage, client, currentScene, () -> {
+        VBox pref = GUIComponents.mieiRistoranti(lista, utente, stage, client, previousScene, () -> {
             stage.setScene(preferitiScene());
         });
 
         Button backBtn = GUIComponents.blackBtn("↤ Indietro");
         backBtn.setOnAction(e -> {
-            try { show(); } catch (SQLException | IOException ex) { ex.printStackTrace(); }
+            stage.setScene(previousScene);
         });
         
         pref.getChildren().add(backBtn);
@@ -354,6 +357,33 @@ public class Home implements GUIBasics {
         System.out.println("Errore nel caricare i tuoi ristoranti.");
         GUIComponents.alert(Alert.AlertType.ERROR, "Errore", "Impossibile caricare i ristoranti.");
         return stage.getScene();
+        }
+    }   
+
+    private Scene mieRecensioniScene(Scene previousScene) {
+    try {
+        Message res = client.send(new Message("getRecensioniUtente", new Object[]{utente.getId()}));
+        List<Recensione> recensioni = (List<Recensione>) res.getDati()[0];
+        List<Ristorante> ristoranti = (List<Ristorante>) res.getDati()[1];
+
+        VBox content = GUIComponents.mieRecensioni(recensioni, ristoranti, utente, stage, client, () -> {
+            stage.setScene(mieRecensioniScene(previousScene));
+        });
+
+        Button backBtn = GUIComponents.blackBtn("↤ Indietro");
+        backBtn.setOnAction(e -> {
+            stage.setScene(previousScene);
+        });
+        content.getChildren().add(0, backBtn);
+
+        double w = stage.isShowing() ? stage.getWidth() : WIDTH;
+        double h = stage.isShowing() ? stage.getHeight() : HEIGHT;
+        Scene scene = new Scene(content, w, h);
+        scene.getStylesheets().add(getClass().getResource("/style.css").toExternalForm());
+        return scene;
+    } catch (ClassNotFoundException | IOException ex) {
+        GUIComponents.alert(Alert.AlertType.ERROR, "Errore", "Impossibile caricare le recensioni.");
+        return stage.getScene();
+     }
     }
-}    
 }

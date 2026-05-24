@@ -72,6 +72,20 @@ public class RecensioneManager {
         return recensioni;           
     }
 
+    public List<Recensione> getRecensioniUtente(int id) {
+        List<Recensione> recensioni = new ArrayList<>();
+        String query = "SELECT * FROM recensione WHERE utente = ?";
+        try(PreparedStatement statement = db.connection.prepareStatement(query)) {
+            statement.setInt(1, id);
+            try(ResultSet rs = statement.executeQuery()) {
+                while(rs.next()) {
+                    recensioni.add(new Recensione(rs.getInt("id"), rs.getInt("utente"), rs.getInt("ristorante"), rs.getString("testo"), rs.getInt("stelle"), rs.getDate("data"), rs.getString("risposta")));
+                }
+            }
+        }catch(SQLException e) { e.printStackTrace(); }  
+        return recensioni;         
+    }
+
     public double[] getInfoRecensioni(int idRistorante) {
         List<Recensione> recensioni = getRecensioniRistorante(idRistorante);
         double tmp = 0.0;
