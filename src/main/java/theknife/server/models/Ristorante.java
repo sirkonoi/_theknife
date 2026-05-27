@@ -3,7 +3,7 @@ package theknife.server.models;
 import java.io.Serializable;
 
 public class Ristorante implements Serializable {
-    public final long serialVersionUID = 1;
+    private static final long serialVersionUID = 1L;
 
     private int id;
     private String nome;

@@ -1,3 +1,9 @@
+/**
+ * Studente: Mattia Rotteri
+ * Matricola: 762508
+ * Sede: Varese
+ */
+
 package theknife.server.gui;
 
 import javafx.application.Application;
@@ -10,14 +16,32 @@ import javafx.stage.*;
 import theknife.client.gui.GUIComponents;
 import theknife.server.ServerManager;
 
+/**
+ * Classe ServerGUI.
+ * Implementa l'interfaccia grafica per avviare o stoppare il server.
+ */
 public class ServerGUI extends Application {
 
-
+    /**
+     * Larghezza predefinita dei field.
+     */
     private final int FIELD_WIDTH = 350;
+
+    /**
+     * Larghezza predefinita dei bottoni.
+     */    
     private final int BTN_WIDTH = 250;
 
+    /**
+     * Riferimento al server
+     */
     private ServerManager serverManager;
     
+    /**
+     * Inizializza la GUI.
+     *
+     * @param stage {@link Stage}
+     */
     @Override
     public void start(Stage stage) {
         stage.setTitle("TheKnife - Server");
@@ -50,7 +74,7 @@ public class ServerGUI extends Application {
             new Thread(() -> {
                 try {
                     Platform.runLater(() -> statusLabel.setText("Server attivo sulla porta " + ServerManager.PORT));                    
-                    ServerManager serverManager = new ServerManager();
+                    serverManager = new ServerManager();
                     serverManager.exec();
                 } catch (Exception ex) {
                     Platform.runLater(() -> {
@@ -132,6 +156,9 @@ public class ServerGUI extends Application {
         return btn;
     }  
     
+    /**
+     * Esegue le operazioni di chiusura del server.
+     */
     private void spegniServer() {
             System.out.println("Chiusura del server in corso...");
             try {
@@ -145,6 +172,9 @@ public class ServerGUI extends Application {
             }
         }    
 
+    /**
+     * Main di ServerGUI
+     */
     public static void main(String[] args) {
         launch(args);
     }

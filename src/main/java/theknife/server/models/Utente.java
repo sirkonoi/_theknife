@@ -4,7 +4,7 @@ import java.io.Serializable;
 import java.util.Date;
 
 public class Utente implements Serializable {
-    private static final long serialVersionUID = 1;
+    private static final long serialVersionUID = 1L;
     
     protected int id;
     protected String nome, cognome, username;

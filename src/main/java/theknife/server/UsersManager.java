@@ -1,9 +1,6 @@
 package theknife.server;
 
 import java.sql.*;
-
-import javax.naming.spi.DirStateFactory.Result;
-
 import theknife.server.models.*;
 
 public class UsersManager {

@@ -1,3 +1,9 @@
+/**
+ * Studente: Mattia Rotteri
+ * Matricola: 762508
+ * Sede: Varese
+ */
+
 package theknife.client.gui;
 
 import java.io.*;
@@ -12,20 +18,59 @@ import theknife.*;
 import theknife.client.ClientManager;
 import theknife.server.models.*;
 
+/**
+ * Classe Home.
+ * Gestisce l'interfaccia principale di The Knife per gli utenti e i guest.
+ * Fornisce funzionalità di ricerca, gestione del profilo utente, gestione preferiti,
+ *  recensione, ristoranti, filtraggio dei ristoranti.
+ */
 public class Home implements GUIBasics {
 
+    /**
+     * Lo stage dell'applicazione.
+     */
     private Stage stage;
+    
+    /**
+     * Il gestore della connessione.
+     */    
     private ClientManager client;
+
+    /**
+     * Utente loggato.
+     */
     private Utente utente;
+
+    /**
+     * Guest se sessione non autenticata.
+     */
     private Guest guest;
+
+    /**
+     * Indica se l'accesso è in modalità guest.
+     */
     private boolean guestHome = false;
 
+    /**
+     * Costruttore per utente loggato (Cliente o Ristoratore).
+     *
+     * @param stage  Lo {@link Stage} dell'applicazione.
+     * @param client {@link ClientManager} gestore connessione.
+     * @param utente {@link Utente} loggato. 
+     */
     public Home(Stage stage, ClientManager client, Utente utente) {
         this.stage = stage;
         this.client = client;
         this.utente = utente;
     }
 
+    /**
+     * Costruttore per utente ospite.
+     *
+     * @param stage  Lo {@link Stage} dell'applicazione.
+     * @param client {@link ClientManager} gestore connessione.
+     * @param utente {@link Guest}
+     */
     public Home(Stage stage, ClientManager client, Guest guest) {
         this.stage = stage;
         this.client = client;
@@ -33,12 +78,25 @@ public class Home implements GUIBasics {
         guestHome = true;
     }    
 
+    /**
+     * Imposta e mostra la scena della Home sullo stage principale.
+     *
+     * @throws SQLException Errori nel database.
+     * @throws IOException  Errori di I/O.
+     */
     public void show() throws SQLException, IOException {
         stage.setScene(homeScene());
         stage.setTitle("TheKnife");
         stage.show();
     }
 
+    /**
+     * Crea la scena della Homepage.
+     *
+     * @return {@link Scene} della Homepage.
+     * @throws SQLException Errori nel database.
+     * @throws IOException  Errori di I/O.
+     */
     private Scene homeScene() throws SQLException, IOException {
 
         Message res;
@@ -197,13 +255,16 @@ public class Home implements GUIBasics {
         mainBox.getChildren().addAll(topBar, scroll);
         root.getChildren().addAll(sidebar, mainBox);
 
-        double w = stage.isShowing() ? stage.getWidth() : WIDTH;
-        double h = stage.isShowing() ? stage.getHeight() : HEIGHT;
-        Scene scene = new Scene(root, w, h);
+        Scene scene = new Scene(root);
         scene.getStylesheets().add(getClass().getResource("/style.css").toExternalForm());
         return scene;
     }
 
+    /**
+     * Crea la scena del profilo utente.
+     *
+     * @return {@link Scene} del profilo.
+     */
     private Scene profiloScene() {
         VBox layout = new VBox(20);
         layout.setAlignment(Pos.CENTER);
@@ -220,14 +281,17 @@ public class Home implements GUIBasics {
         });
 
         layout.getChildren().addAll(GUIComponents.profiloCard(nome, ruolo, username, domicilio), backBtn);
-        
-        double w = stage.isShowing() ? stage.getWidth()  : WIDTH;
-        double h = stage.isShowing() ? stage.getHeight() : HEIGHT;
-        Scene scene = new Scene(new StackPane(layout), w, h);
+
+        Scene scene = new Scene(new StackPane(layout));
         scene.getStylesheets().add(getClass().getResource("/style.css").toExternalForm());
         return scene;
     }
 
+    /**
+     * Crea la scena per la sezione "I miei preferiti".
+     *
+     * @return {@link Scene} della sezione preferiti.
+     */
     private Scene preferitiScene() {
     try {
         Message res = client.send(new Message("getPreferitiUtente", new Object[]{utente.getId()}));
@@ -245,9 +309,7 @@ public class Home implements GUIBasics {
         
         pref.getChildren().add(backBtn);
 
-        double w = stage.isShowing() ? stage.getWidth() : WIDTH;
-        double h = stage.isShowing() ? stage.getHeight() : HEIGHT;
-        Scene scene = new Scene(pref, w, h);
+        Scene scene = new Scene(pref);
         scene.getStylesheets().add(getClass().getResource("/style.css").toExternalForm());
         return scene;
 
@@ -258,6 +320,13 @@ public class Home implements GUIBasics {
     }
 }
 
+    /**
+     * Crea la scena per l'aggiunta di un nuovo ristorante.
+     *
+     * @param user {@link Utente} proprietario del nuovo ristorante.
+     * @param previousScene Scena per tornare indietro dopo la creazione.
+     * @return {@link Scene} form creazione nuovo ristorante.
+     */
     private Scene newRestaurantScene(Utente user, Scene previousScene) {
         VBox layout = new VBox(12);
         layout.setAlignment(Pos.CENTER);
@@ -327,9 +396,16 @@ public class Home implements GUIBasics {
             }
         });
         layout.getChildren().addAll(GUIComponents.miniLogo(), nomeField, indirizzoField, cittaField, nazioneField, fasciaField, tipoField, selRow, err, addBtn, backBtn);
-        return GUIComponents.makeScene(layout, previousScene.getWidth(), previousScene.getHeight());        
+        return GUIComponents.makeScene(layout);        
     }
 
+    /**
+     * Crea la scena per la visualizzazione e gestione dei propri ristoranti.
+     * 
+     * @param utente {@link Utente} ristoratore.
+     * @param previousScene La scena per bottone "indietro".
+     * @return {@link Scene} per la gestione dei ristoranti.
+     */
     private Scene mieiRistorantiScene(Utente utente, Scene previousScene) {
     try {
         Message res = client.send(new Message("getRistorantiUtente", new Object[]{utente.getId()}));
@@ -346,9 +422,7 @@ public class Home implements GUIBasics {
         
         pref.getChildren().add(backBtn);
 
-        double w = stage.isShowing() ? stage.getWidth() : WIDTH;
-        double h = stage.isShowing() ? stage.getHeight() : HEIGHT;
-        Scene scene = new Scene(pref, w, h);
+        Scene scene = new Scene(pref);
         scene.getStylesheets().add(getClass().getResource("/style.css").toExternalForm());
         return scene;
 
@@ -359,6 +433,12 @@ public class Home implements GUIBasics {
         }
     }   
 
+    /**
+     * Crea la scena per visualizzare e gestire le proprie recensioni.
+     * 
+     * @param previousScene Scena per bottoni "indietro".
+     * @return {@link Scene} per gestire proprie recensioni.
+     */
     private Scene mieRecensioniScene(Scene previousScene) {
     try {
         Message res = client.send(new Message("getRecensioniUtente", new Object[]{utente.getId()}));
@@ -375,9 +455,7 @@ public class Home implements GUIBasics {
         });
         content.getChildren().add(0, backBtn);
 
-        double w = stage.isShowing() ? stage.getWidth() : WIDTH;
-        double h = stage.isShowing() ? stage.getHeight() : HEIGHT;
-        Scene scene = new Scene(content, w, h);
+        Scene scene = new Scene(content);
         scene.getStylesheets().add(getClass().getResource("/style.css").toExternalForm());
         return scene;
     } catch (ClassNotFoundException | IOException ex) {

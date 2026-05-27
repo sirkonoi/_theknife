@@ -11,6 +11,7 @@ public class ServerManager {
     
     public ServerManager() {
         try {
+            this.db = new DBManager();
             server = new ServerSocket(PORT);  
             System.out.println("Server: connessione riuscita. PORTA("+ PORT+")");  
         }catch(IOException ie) {
@@ -34,7 +35,7 @@ public class ServerManager {
             try {
                 socket = server.accept();
                 System.out.println("Il client " + socket + " si e' connesso.");
-                new ServerSlave(socket).start();
+                new ServerSlave(socket, db).start();
             }catch(IOException e) {
                 try {
                     System.out.println("Il client " + socket + " si e' disconnesso.");

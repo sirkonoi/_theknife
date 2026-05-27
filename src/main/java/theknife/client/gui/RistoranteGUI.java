@@ -1,7 +1,12 @@
+/**
+ * Studente: Mattia Rotteri
+ * Matricola: 762508
+ * Sede: Varese
+ */
+
 package theknife.client.gui;
 
 import java.io.*;
-import java.sql.*;
 import java.util.*;
 import javafx.geometry.*;
 import javafx.scene.*;
@@ -12,16 +17,58 @@ import theknife.*;
 import theknife.client.ClientManager;
 import theknife.server.models.*;
 
+/**
+ * Classe RistoranteGUI.
+ * Gestisce la visualizzazione di uno specifico ristorante selezionato.
+ * Possibilità di aggiungere recensioni, risposte.
+ */
 public class RistoranteGUI implements GUIBasics {
 
+    /**
+     * Lo stage dell'applicazione.
+     */
     private Stage stage;
+
+    /**
+     * Il gestore connessione.
+     */
     private ClientManager client;
+
+/**
+     * Utente loggato (Utente o Ristoratore).
+     */    
     private Utente utente;
+
+    /**
+     * Utente non registrato (Ospite).
+     */
     private Guest guest;
+
+    /**
+     * Indica se l'accesso è in modalità guest.
+     */    
     private boolean guestHome;
+
+    /**
+     * Il ristorante da visualizzare.
+     */    
     private Ristorante ristorante;
+
+    /**
+     * Scene precedente.
+     */    
     private Scene previousScene;
 
+
+    /**
+     * Costruttore per utente loggato.
+     *
+     * @param stage
+     * @param client        {@link ClientManager} gestore connessione.
+     * @param utente        {@link Utente} loggato.
+     * @param ristorante    {@link Ristorante} da visualizzare.
+     * @param previousScene {@link Scene} per tornare indietro.
+     */    
     public RistoranteGUI(Stage stage, ClientManager client, Utente utente, Ristorante ristorante, Scene previousScene) {
         this.stage = stage;
         this.client = client;
@@ -31,6 +78,15 @@ public class RistoranteGUI implements GUIBasics {
         this.guestHome = false;
     }
 
+        /**
+     * Costruttore per guest.
+     *
+     * @param stage
+     * @param client        {@link ClientManager} gestore connessione.
+     * @param guest        {@link Guest} ospite.
+     * @param ristorante    {@link Ristorante} da visualizzare.
+     * @param previousScene {@link Scene} per tornare indietro.
+     */ 
     public RistoranteGUI(Stage stage, ClientManager client, Guest guest, Ristorante ristorante, Scene previousScene) {
         this.stage = stage;
         this.client = client;
@@ -40,10 +96,18 @@ public class RistoranteGUI implements GUIBasics {
         this.guestHome = true;
     }
 
+    /**
+     * Imposta edsullo stage principale la scena del ristorante.
+     */
     public void show() {
         stage.setScene(restaurantScene());
     }
 
+    /**
+     * Crea la scena di visualizzazione del ristorante,
+     *
+     * @return {@link Scene} del dato ristorante. 
+     */
     private Scene restaurantScene() {
         HBox root = new HBox(20);
         root.setStyle("-fx-background-color: #1a1a1a;");
@@ -99,13 +163,17 @@ public class RistoranteGUI implements GUIBasics {
         rightCol.getChildren().addAll(recTitle, scroll);
         root.getChildren().addAll(leftCol, rightCol);
 
-        double w = stage.isShowing() ? stage.getWidth() : WIDTH;
-        double h = stage.isShowing() ? stage.getHeight() : HEIGHT;
-        Scene scene = new Scene(root, w, h);
+        Scene scene = new Scene(root);
         scene.getStylesheets().add(getClass().getResource("/style.css").toExternalForm());
         return scene;
     }
 
+    /**
+     * Carica la lista di recensioni e le aggiunge al box di recensioni.
+     *
+     * @param boxRecensioni {@link VBox} che conterrà le recensioni
+     * @param isOwner Indica se l'utente e' owner del ristorante.
+     */
     private void caricaRecensioni(VBox boxRecensioni, boolean isOwner) {
         boxRecensioni.getChildren().clear();
         try {

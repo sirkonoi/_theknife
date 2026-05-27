@@ -4,7 +4,7 @@ import java.io.Serializable;
 import java.util.Date;
 
 public class Recensione implements Serializable {
-    public final long serialVersionUID = 1;
+    private static final long serialVersionUID = 1L;
     
     private int id;
     private int idRecensore;

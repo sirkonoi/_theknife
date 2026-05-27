@@ -1,6 +1,10 @@
 package theknife.server.models;
 
-public class Preferito {
+import java.io.Serializable;
+
+public class Preferito implements Serializable {
+
+    private static final long serialVersionUID = 1L;
 
     int idUtente;
     int idRistorante;

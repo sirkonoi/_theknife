@@ -1,3 +1,9 @@
+/**
+ * Studente: Mattia Rotteri
+ * Matricola: 762508
+ * Sede: Varese
+ */
+
 package theknife.client.gui;
 
 import java.io.IOException;
@@ -14,24 +20,49 @@ import theknife.server.models.Luogo;
 import theknife.server.models.Password;
 import theknife.server.models.Utente;
 
+/**
+ * Classe Welcome.
+ * Gestisce la schermata di benvenuto dell'applicazione, autenticazione
+ * registrazione e accesso in modalità Guest.
+ */
 public class Welcome implements GUIBasics {
 
+    /**
+     * Lo stage dell'applicazione.
+     */
     private Stage stage;
+
+    /**
+     * Gestore connessione.
+     */    
     private ClientManager client;
 
+    /**
+     * Costruttore della classe Welcome.
+     *
+     * @param stage  {@link Stage} dell'applicazione.
+     * @param client {@link ClientManager} gestore connessione.
+     */
     public Welcome(Stage stage, ClientManager client) {
         this.stage = stage;
         this.client = client;
-        stage.setMinWidth(MIN_WIDTH);
-        stage.setMinHeight(MIN_HEIGHT);
     }
 
+    /**
+     * Visualizza la schermata iniziale di benvenuto.
+     */
     public void show() {
         stage.setScene(welcomeScene());
         stage.setTitle("TheKnife");
         stage.show();
     }
 
+    /**
+     * Crea la scena di benvenuto contenente il logo,
+     * i bottoni per l'accesso e registrazione.
+     *
+     * @return {@link Scene} di benvenuto. 
+     */
     private Scene welcomeScene() {
         VBox layout = new VBox(16);
         layout.setAlignment(Pos.CENTER);
@@ -51,9 +82,15 @@ public class Welcome implements GUIBasics {
         reg.setAlignment(Pos.CENTER);
 
         layout.getChildren().addAll(GUIComponents.logo(), loginBtn, guestBtn, reg);
-        return GUIComponents.makeScene(layout, WIDTH, HEIGHT);
+        return GUIComponents.makeScene(layout);
     }
 
+    /**
+     * Crea la scena relativa al login.
+     * Gestisce l'invio delle credenziali al server e il reindirizzamento alla Home in caso di successo.
+     *
+     * @return {@link Scene} form di login.
+     */
     private Scene loginScene() {
         VBox layout = new VBox(12);
         layout.setAlignment(Pos.CENTER);
@@ -95,9 +132,14 @@ public class Welcome implements GUIBasics {
         reg.setAlignment(Pos.CENTER);
 
         layout.getChildren().addAll(GUIComponents.miniLogo(), usernameField, passwordField, err, loginBtn, backBtn, reg);
-        return GUIComponents.makeScene(layout, WIDTH, HEIGHT);
+        return GUIComponents.makeScene(layout);
     }
 
+    /**
+     * Crea la scena con il form per la creazione di un nuovo account.
+     *
+     * @return {@link Scene} con il form di registrazione.
+     */
     private Scene registerScene() {
         VBox layout = new VBox(12);
         layout.setAlignment(Pos.CENTER);
@@ -160,9 +202,14 @@ public class Welcome implements GUIBasics {
         });
 
         layout.getChildren().addAll(GUIComponents.miniLogo(), nomeField, cognomeField, usernameField, domicilioField, pswField, pswConfField, ruoloRow, err, regBtn, backBtn);
-        return GUIComponents.makeScene(layout, WIDTH, HEIGHT);
+        return GUIComponents.makeScene(layout);
     }
 
+    /**
+     * Crea la scena per l'accesso guest.
+     *
+     * @return {@link Scene} con il form per l'accesso guest.
+     */
     private Scene guestScene() {
         VBox layout = new VBox(12);
         layout.setAlignment(Pos.CENTER);
@@ -197,6 +244,6 @@ public class Welcome implements GUIBasics {
         });
 
         layout.getChildren().addAll(GUIComponents.miniLogo(), titleLabel, domicilioField, err, continueBtn, backBtn);
-        return GUIComponents.makeScene(layout, WIDTH, HEIGHT);
+        return GUIComponents.makeScene(layout);
     }
 }

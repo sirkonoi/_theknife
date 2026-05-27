@@ -21,12 +21,12 @@ public class ServerSlave extends Thread {
     RecensioneManager recensioniManager;
     PreferitiManager preferitiManager;
 
-    public ServerSlave(Socket socket) {
+    public ServerSlave(Socket socket, DBManager db) {
         try {
             this.socket = socket;
             out = new ObjectOutputStream(socket.getOutputStream());
             in = new ObjectInputStream(socket.getInputStream());
-            db = new DBManager();
+            this.db = db;
             usersManager = new UsersManager(db);
             restaurantManager = new RestaurantManager(db);
             recensioniManager = new RecensioneManager(db);

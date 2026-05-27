@@ -4,8 +4,8 @@ import java.io.*;
 import java.net.*;
 
 public class Luogo implements Serializable {
-    public final long serialVersionUID = 1;
-
+    private static final long serialVersionUID = 1L;
+    
     private int id;
     private String indirizzo;
     private String nazione;
@@ -58,6 +58,7 @@ public class Luogo implements Serializable {
 
         a[0] = Double.parseDouble(lat);
         a[1] = Double.parseDouble(lon);
+        
         return a; //a[0] è la latitudine e a[1] è longitudine
     }
 

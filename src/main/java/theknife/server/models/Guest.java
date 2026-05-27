@@ -3,14 +3,13 @@ package theknife.server.models;
 import java.io.Serializable;
 
 public class Guest implements Serializable {
-    private static final long serialVersionUID = 1;
-    
+    private static final long serialVersionUID = 1L;    
     private String nome;
     private String domicilio;
     private String ruolo;
 
     public Guest(String domicilio) {
-        this.nome = nome;
+        nome = "Guest";
         this.domicilio = domicilio;
         ruolo = "guest";
     }
