@@ -5,15 +5,35 @@ import java.sql.*;
 import java.util.*;
 import theknife.server.models.*;
 
+/**
+ * Classe RestaurantManager.
+ * Gestisce la logica e le interazioni con il database relative ai ristoranti.
+ */
 public class RestaurantManager {
-
-    String[] columns = {"nome", "luogo", "fascia_prezzo", "delivery", "prenotazione_online", "ristoratore"};
+  
+    /**
+     * Il database
+     */
     DBManager db;
 
+     /**
+     * Costruttore della classe RestaurantManager.
+     *
+     * @param db {@link DBManager} condiviso per l'accesso al database.
+     */
     public RestaurantManager(DBManager db) {
         this.db = db;
     }
 
+    /**
+     * Registra un nuovo ristorante eseguendo in modo sequenziale l'inserimento
+     * del luogo, l'estrazione della chiave generata, la scrittura
+     * del record del ristorante e il popolamento delle tabelle dei tipi di cucina.
+     *
+     * @param newRistorante {@link Ristorante} da inserire.
+     * @param tipiRistorante Un array di stringhe contenente le tipologie di cucina del ristorante.
+     * @throws SQLException Lanciata in caso di errore delle query.
+     */
     public void addRistorante(Ristorante newRistorante, String[] tipiRistorante) throws SQLException {
         int idLuogo = insertLuogo(newRistorante.getLuogo());
         if (idLuogo == -1) throw new SQLException("Inserimento luogo fallito.");
@@ -47,6 +67,12 @@ public class RestaurantManager {
         }
     }
 
+    /**
+     * Elimina un ristorante dal database in base al suo id.
+     *
+     * @param id Id del ristorante da eliminare.
+     * @return true se l'eliminazione avviene con successo, false in caso di eccezione SQL.
+     */
     public boolean deleteRistorante(int id) {
         String query = "DELETE FROM ristorante WHERE id = ?";
         
@@ -57,6 +83,13 @@ public class RestaurantManager {
         }catch(SQLException e) { return false; }
     }
 
+    /**
+     * Restituisce la lista di tutti i ristoranti.
+     *
+     * @return {@link List} contenente tutti i {@link Ristorante} presenti sul DB.
+     * @throws SQLException Errori SQL.
+     * @throws IOException Errori I/O.
+     */
     public List<Ristorante> getListaRistoranti() throws SQLException, IOException {
         List<Ristorante> lista = new ArrayList<>();
 
@@ -72,6 +105,13 @@ public class RestaurantManager {
         return lista;
     }
 
+    /**
+     * Restituisce la lista dei ristoranti associati a uno specifico utente con ruolo di ristoratore.
+     *
+     * @param id L'id dell'utente.
+     * @return {@link List} dei ristoranti dell'utente.
+     * @throws IOException Errori di I/O.
+     */
     public List<Ristorante> getRistorantiUtente(int id) throws IOException {
         List<Ristorante> lista = new ArrayList<>();
         String query = "SELECT ris.*, luogo.nazione, luogo.citta, luogo.indirizzo, luogo.latitudine, luogo.longitudine FROM ristorante ris JOIN luogo ON ris.luogo = luogo.id  WHERE ristoratore = ?";
@@ -87,6 +127,15 @@ public class RestaurantManager {
         return lista;
     }
 
+    /**
+     * Restituisce una lista di ristoranti filtrati sulla base di vari criteri come:
+     * distanza, cucina, prezzo, delivery, prenotazione.
+     *
+     * @param filtri Un array di oggetti contenente nell'ordine: raggio (0), cucina (1), prezzo (2), delivery (3), prenotazione (4), indirizzo dell'utente (5).
+     * @return {@link List} di {@link Ristorante} filtrati.
+     * @throws SQLException
+     * @throws IOException
+     */
     public List<Ristorante> filtra(Object[] filtri) throws SQLException, IOException {
         double[] coordinate = Luogo.getLatitudineLongitudine((String) filtri[5]);
         if (coordinate == null)
@@ -112,7 +161,7 @@ public class RestaurantManager {
             else if (prezzo.equals("50-100€")) {
                 query += " AND ris.fascia_prezzo BETWEEN 50 AND 100";
             }
-            else if (prezzo.equals("50-100€")) {
+            else if (prezzo.equals(">100€")) {
                 query += " AND ris.fascia_prezzo > 100";  
             }          
         }
@@ -151,6 +200,12 @@ public class RestaurantManager {
         return lista;
     }
 
+    /**
+     * Cerca un ristorante in base al nome.
+     * 
+     * @param nome La stringa del nome da ricercare.
+     * @return Un {@link Ristorante} corrispondente se trovato, null altrimenti.
+     */
     public Ristorante cercaRistorante(String nome) {
         String query = "SELECT ris.*, luogo.nazione, luogo.citta, luogo.indirizzo, luogo.latitudine, luogo.longitudine FROM ristorante ris JOIN luogo ON ris.luogo = luogo.id  WHERE nome = ?";
         try(PreparedStatement statement = db.connection.prepareStatement(query)) {
@@ -165,6 +220,12 @@ public class RestaurantManager {
         return null;
     }
 
+        /**
+     * Cerca un ristorante in base all'id.
+     * 
+     * @param id Id del ristorante da ricercare.
+     * @return Un {@link Ristorante} corrispondente se trovato, null altrimenti.
+     */
     public Ristorante cercaRistorante(int id) {
         String query = "SELECT ris.*, luogo.nazione, luogo.citta, luogo.indirizzo, luogo.latitudine, luogo.longitudine FROM ristorante ris JOIN luogo ON ris.luogo = luogo.id  WHERE ris.id = ?";
         try(PreparedStatement statement = db.connection.prepareStatement(query)) {
@@ -179,6 +240,11 @@ public class RestaurantManager {
         return null;
     }    
     
+    /**
+     * Restituisce una lista di tutti i tipi di cucina disponibili sul DB.
+     *
+     * @return {@link List} di stringhe contenente i tipi di cucina.
+     */
     public List<String> getAllTipi() {
         String query = "SELECT DISTINCT tipo FROM tipocucina";
         List<String> tipi = new ArrayList<>();
@@ -193,6 +259,12 @@ public class RestaurantManager {
         return tipi;
     }
 
+    /**
+     * Dato l'id, restituisce la lista di tipi di cucina di uno specifico ristorante.
+     * 
+     * @param id L'iddel ristorante,
+     * @return {@link List} di stringhe ovvero i tipi di cucina.
+     */
     public List<String> getTipo(int id) {
         String query = "SELECT tipo_cucina FROM Ristorante JOIN tipo_cucina_ristorante ON id = ristorante WHERE id = ?";
         List<String> tipi = new ArrayList<>();
@@ -208,6 +280,14 @@ public class RestaurantManager {
         return tipi;
     }
 
+    /**
+     * Individua un luogo, a partire dall'id.
+     * 
+     * @param id L'id del luogo.
+     * @return {@link Luogo} se presente, null altrimenti.
+     * @throws SQLException 
+     * @throws IOException
+     */
     public Luogo findLuogo(int id) throws SQLException, IOException {
         PreparedStatement statement = db.connection.prepareStatement("SELECT * FROM luogo WHERE id = ?");
         statement.setInt(1, id);
@@ -218,6 +298,13 @@ public class RestaurantManager {
         return null;
     }
 
+    /**
+     * Aggiungi un nuovo luogo nel DB.
+     *
+     * @param luogo {@link Luogo} da inserire.
+     * @return Il valore della chiave primaria del luogo aggiunto, oppure -1 in caso di fallimento.
+     * @throws SQLException
+     */
     public int insertLuogo(Luogo luogo) throws SQLException {
         String query = "INSERT INTO luogo (nazione, citta, indirizzo, latitudine, longitudine) VALUES (?, ?, ?, ?, ?) RETURNING id";
         try(PreparedStatement statement = db.connection.prepareStatement(query)) {

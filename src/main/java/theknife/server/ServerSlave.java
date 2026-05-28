@@ -1,3 +1,8 @@
+/**
+ * Studente: Mattia Rotteri
+ * Matricola: 762508
+ * Sede: Varese
+ */
 package theknife.server;
 
 import java.io.*;
@@ -10,17 +15,60 @@ import java.util.List;
 import theknife.server.models.*;
 import theknife.Message;
 
+/**
+ * Classe ServerSlave.
+ * Estende {@link Thread} e rappresenta il thread dedicato alla gestione della singola 
+ * sessione con il client specifico.
+ * Legge i {@link Message} in arrivo, ed esegue le varie operazioni .
+ */
 public class ServerSlave extends Thread {
 
-    Socket socket;
-    ObjectOutputStream out;
-    ObjectInputStream in;
-    UsersManager usersManager;
-    RestaurantManager restaurantManager;
+    /**
+     * Il database.
+     */
     DBManager db;
+
+    /**
+     * Il Socket.
+     */
+    Socket socket;
+
+    /**
+     * Flusso di output.
+     */    
+    ObjectOutputStream out;
+
+    /**
+     * Flusso di input.
+     */    
+    ObjectInputStream in;
+
+    /**
+     * Gestore utenti.
+     */
+    UsersManager usersManager;
+    /**
+     * Gestore ristoranti.
+     */
+    RestaurantManager restaurantManager;
+
+    /**
+     * Gestore recensioni.
+     */
     RecensioneManager recensioniManager;
+
+    /**
+     * Gestore preferiti.
+     */
     PreferitiManager preferitiManager;
 
+    /**
+     * Costruttore della classe ServerSlave.
+     * Inizializza i flussi di comunicazione Object...Stream e i manager.
+     *
+     * @param socket {@link Socket} aperto ed assegnato dal {@link ServerManager}.
+     * @param db {@link DBManager}.
+     */
     public ServerSlave(Socket socket, DBManager db) {
         try {
             this.socket = socket;
@@ -37,6 +85,10 @@ public class ServerSlave extends Thread {
         }
     }
 
+    /**
+     * Rimane in ascolto di messaggi di richiesta del client, decodifica l'operazione
+     * e la esegue tramite i vari manager.
+     */
     public void run() {
         try {
             while (true) {

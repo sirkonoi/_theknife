@@ -69,7 +69,7 @@ public class Home implements GUIBasics {
      *
      * @param stage  Lo {@link Stage} dell'applicazione.
      * @param client {@link ClientManager} gestore connessione.
-     * @param utente {@link Guest}
+     * @param guest {@link Guest}
      */
     public Home(Stage stage, ClientManager client, Guest guest) {
         this.stage = stage;
