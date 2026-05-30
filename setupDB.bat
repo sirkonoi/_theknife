@@ -7,7 +7,7 @@ echo.
 set /p PGUSER="Inserisci l'username di Postgres [Default: postgres]: "
 if "%PGUSER%"=="" set PGUSER=postgres
 
-set /p PGPASSWORD="Inserisci la password del tuo Postgres: "
+set /p PGPASSWORD="Inserisci la password del tuo account Postgres: "
 
 set /p PGHOST="Inserisci l'host [Default: localhost]: "
 if "%PGHOST%"=="" set PGHOST=localhost

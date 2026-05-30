@@ -41,6 +41,8 @@ public class ServerManager {
             System.out.println("Server: connessione riuscita. PORTA("+ PORT+")");  
         }catch(IOException ie) {
             System.out.println("Server: connessione fallita...");
+            ie.printStackTrace(); 
+            System.exit(1);         
         }
     }
 

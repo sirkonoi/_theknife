@@ -62,8 +62,9 @@ public class ServerGUI extends Application {
         statusLabel.setStyle("-fx-font-size: 12; -fx-text-fill: #888888;");
         statusLabel.setVisible(false);
 
-        Button avvioBtn  = blackBtn("Avvia con credenziali");
+        Button avvioBtn  = blackBtn("Avvia il server");
         Button defaultBtn = greenBtn("Avvia default (SOLO TEST)");
+        defaultBtn.setManaged(true);
         Button logoutBtn  = logoutButton();
 
         defaultBtn.setOnAction(e -> {
@@ -112,8 +113,8 @@ public class ServerGUI extends Application {
             }).start();
         });
 
-        layout.getChildren().addAll(GUIComponents.logo(), hostField, portField, dbField, userField, pswField, defaultBtn, avvioBtn, logoutBtn, statusLabel);
-        Scene scene = new Scene(layout, 420, 600);
+        layout.getChildren().addAll(GUIComponents.logo(), hostField, portField, dbField, userField, pswField, avvioBtn, logoutBtn, statusLabel);
+        Scene scene = new Scene(layout, 420, 500);
         scene.getStylesheets().add(getClass().getResource("/style.css").toExternalForm());
         stage.setScene(scene);
         stage.show();
