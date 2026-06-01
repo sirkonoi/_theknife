@@ -161,7 +161,7 @@ public class RestaurantManager {
             else if (prezzo.equals("50-100€")) {
                 query += " AND ris.fascia_prezzo BETWEEN 50 AND 100";
             }
-            else if (prezzo.equals(">100€")) {
+            else if (prezzo.equals("> 100€")) {
                 query += " AND ris.fascia_prezzo > 100";  
             }          
         }

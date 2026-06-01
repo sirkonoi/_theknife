@@ -3,7 +3,6 @@ echo ===================================================
 echo       THE KNIFE - CONFIGURAZIONE DATABASE
 echo ===================================================
 echo.
-
 set /p PGUSER="Inserisci l'username di Postgres [Default: postgres]: "
 if "%PGUSER%"=="" set PGUSER=postgres
 
@@ -15,14 +14,19 @@ if "%PGHOST%"=="" set PGHOST=localhost
 set /p PGPORT="Inserisci la porta [Default: 5432]: "
 if "%PGPORT%"=="" set PGPORT=5432
 
-set PGDATABASE=postgres
+echo.
+echo ---------------------------------------------------
+echo [The Knife] Creazione database in corso...
+echo ---------------------------------------------------
+
+psql -U %PGUSER% -h %PGHOST% -p %PGPORT% -d postgres -c "CREATE DATABASE theknife;"
 
 echo.
 echo ---------------------------------------------------
-echo [The Knife] Inizializzazione del Database in corso...
+echo [The Knife] Inizializzazione schema e dati...
 echo ---------------------------------------------------
 
-psql -f init.sql
+psql -U %PGUSER% -h %PGHOST% -p %PGPORT% -d theknife -f init.sql
 
 echo.
 echo ===================================================
