@@ -11,6 +11,7 @@ import javafx.application.Platform;
 import javafx.geometry.*;
 import javafx.scene.*;
 import javafx.scene.control.*;
+import javafx.scene.image.Image;
 import javafx.scene.layout.*;
 import javafx.stage.*;
 import theknife.client.gui.GUIComponents;
@@ -46,6 +47,9 @@ public class ServerGUI extends Application {
     public void start(Stage stage) {
         stage.setTitle("TheKnife - Server");
         stage.setResizable(false);
+
+        Image logo = new Image(getClass().getResourceAsStream("/logo_app.png"));
+        stage.getIcons().add(logo);    
 
         VBox layout = new VBox(14);
         layout.setAlignment(Pos.CENTER);

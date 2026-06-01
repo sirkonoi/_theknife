@@ -62,7 +62,8 @@ public class GUIComponents implements GUIBasics {
     }
 
     /**
-     * Crea un PasswordField per password formattato con testo fornito e larghezza fissa.
+     * Crea un PasswordField per password formattato con testo fornito e larghezza
+     * fissa.
      *
      * @param text Il testo da mostrare nel campo.
      * @return {@link PasswordField} formattato.
@@ -80,7 +81,7 @@ public class GUIComponents implements GUIBasics {
      *
      * @param text Il testo da visualizzare nel pulsante.
      * @return {@link Button} formattato.
-     */    
+     */
     public static Button greenBtn(String text) {
         Button b = new Button(text);
         b.setPrefWidth(BTN_WIDTH);
@@ -93,7 +94,7 @@ public class GUIComponents implements GUIBasics {
      *
      * @param text Il testo da visualizzare nel pulsante.
      * @return {@link Button} formattato.
-     */ 
+     */
     public static Button blackBtn(String text) {
         Button b = new Button(text);
         b.setPrefWidth(BTN_WIDTH);
@@ -104,14 +105,15 @@ public class GUIComponents implements GUIBasics {
     /**
      * Genera un pulsante di logout per uscire dall'app.
      *
-     * @return {@link Button} formattato e che fa terminare l'applicazione se premuto.
-     */ 
+     * @return {@link Button} formattato e che fa terminare l'applicazione se
+     *         premuto.
+     */
     public static Button logoutButton() {
         Button btn = new Button("⛔ Esci");
         btn.getStyleClass().add("logout-btn");
         btn.setOnAction(e -> System.exit(0));
         return btn;
-    }   
+    }
 
     /**
      * Crea un bottone specifico per la sidebar della homepage.
@@ -125,7 +127,7 @@ public class GUIComponents implements GUIBasics {
         b.setAlignment(Pos.CENTER_LEFT);
         b.getStyleClass().add("sidebar-btn");
         return b;
-    }  
+    }
 
     /**
      * Inizializza un'etichetta preposta alla segnalazione degli errori,
@@ -144,7 +146,7 @@ public class GUIComponents implements GUIBasics {
     /**
      * Mostra l'etichetta di errore specificata.
      *
-     * @param l L'etichetta {@link Label} da abilitare.
+     * @param l   L'etichetta {@link Label} da abilitare.
      * @param msg Il messaggio dell'errore da mostrare.
      */
     public static void showError(Label l, String msg) {
@@ -176,10 +178,11 @@ public class GUIComponents implements GUIBasics {
             img.setFitHeight(70);
             img.setPreserveRatio(true);
             box.getChildren().add(img);
-        } catch (Exception e) {}
+        } catch (Exception e) {
+        }
         return box;
     }
-    
+
     /**
      * Genera un contenitore che contiene il logo (versione piccola) di The Knife.
      *
@@ -193,10 +196,11 @@ public class GUIComponents implements GUIBasics {
             img.setFitHeight(30);
             img.setPreserveRatio(true);
             box.getChildren().add(img);
-        } catch (Exception e) {}
+        } catch (Exception e) {
+        }
         return box;
-    }  
-    
+    }
+
     /**
      * Crea e formatta la VBox per la navigazione nell'homepage.
      *
@@ -220,8 +224,8 @@ public class GUIComponents implements GUIBasics {
         label.setWrapText(true);
         label.setMaxWidth(Double.MAX_VALUE);
         return label;
-    } 
-    
+    }
+
     /**
      * Crea un separatore.
      *
@@ -232,9 +236,10 @@ public class GUIComponents implements GUIBasics {
         sep.getStyleClass().add("separator");
         return sep;
     }
-    
+
     /**
-     * Crea una regione vuota, usata per occupare tutto lo spazio disponibili in contenitori (es. per la sidebar).
+     * Crea una regione vuota, usata per occupare tutto lo spazio disponibili in
+     * contenitori (es. per la sidebar).
      *
      * @return {@link Region} formattata.
      */
@@ -242,10 +247,11 @@ public class GUIComponents implements GUIBasics {
         Region spacer = new Region();
         VBox.setVgrow(spacer, Priority.ALWAYS);
         return spacer;
-    }   
-    
+    }
+
     /**
-     * Crea un menu' a tendina contenente l'elenco delle tipologie di cucina disponibili per i filtri.
+     * Crea un menu' a tendina contenente l'elenco delle tipologie di cucina
+     * disponibili per i filtri.
      *
      * @param lista La lista di tipi dei ristoranti.
      * @return {@link ComboBox} formattato.
@@ -258,8 +264,8 @@ public class GUIComponents implements GUIBasics {
         tipi.getItems().setAll(lista);
         tipi.getStyleClass().add("combobox");
         return tipi;
-    }  
-    
+    }
+
     /**
      * Crea un menu' a tendina contenente l'elenco dei prezzi medi per i filtri.
      *
@@ -272,8 +278,8 @@ public class GUIComponents implements GUIBasics {
         prezzo.getItems().addAll("< 20€", "20-50€", "50-100€", "> 100€");
         prezzo.getStyleClass().add("combobox");
         return prezzo;
-    }  
-    
+    }
+
     /**
      * Crea una checkbox da usare per filtri booleani (es. delivery, booking..)
      *
@@ -284,10 +290,11 @@ public class GUIComponents implements GUIBasics {
         CheckBox check = new CheckBox(testo);
         check.getStyleClass().add("checkbox");
         return check;
-    }  
-    
+    }
+
     /**
-     * Aggiunge la scrollbar a un nodo, inoltre disabilita lo scorrimento orizzontale.
+     * Aggiunge la scrollbar a un nodo, inoltre disabilita lo scorrimento
+     * orizzontale.
      *
      * @param content Il nodo {@link Node} da rendere scorrevole.
      * @return {@link ScrollPane} formattato.
@@ -303,20 +310,25 @@ public class GUIComponents implements GUIBasics {
 
     /**
      * Fabbrica una card per rappresentare un singolo ristorante, con dati,
-     * pulsanti di navigazione (visualizzare i dettagli) e per l'inserimento nei preferiti.
+     * pulsanti di navigazione (visualizzare i dettagli) e per l'inserimento nei
+     * preferiti.
      *
      * @param ristorante   Oggetto {@link Ristorante} da visualizzare.
      * @param media        Media numero stelle.
      * @param numRec       Numero totale di recensioni.
      * @param utente       Il profilo {@link Utente} se loggato.
-     * @param guest        Il profilo ospite {@link Guest} qualora l'accesso sia senza login.
-     * @param guestHome    Variabile booleana che indica se l'accesso è di tipo guest.
+     * @param guest        Il profilo ospite {@link Guest} qualora l'accesso sia
+     *                     senza login.
+     * @param guestHome    Variabile booleana che indica se l'accesso è di tipo
+     *                     guest.
      * @param stage        {@link Stage} usato per lo switch di scena.
      * @param client       {@link ClientManager} gestore della connessione.
-     * @param currentScene La scena corrente per eventuali "indietro", ovvero tornare alla scena precedente.
+     * @param currentScene La scena corrente per eventuali "indietro", ovvero
+     *                     tornare alla scena precedente.
      * @return {@link HBox} formattato.
      */
-    public static HBox ristoranteCard(Ristorante ristorante, double media, int numRec, Utente utente, Guest guest, boolean guestHome, Stage stage, ClientManager client, Scene currentScene) {        
+    public static HBox ristoranteCard(Ristorante ristorante, double media, int numRec, Utente utente, Guest guest,
+            boolean guestHome, Stage stage, ClientManager client, Scene currentScene) {
         HBox card = new HBox(16);
         card.setPadding(new Insets(12, 16, 12, 16));
         card.setAlignment(Pos.CENTER_LEFT);
@@ -329,19 +341,23 @@ public class GUIComponents implements GUIBasics {
         nomeLabel.getStyleClass().add("card-titolo");
         List<String> tipi = new ArrayList<>();
         try {
-            Message res = client.send(new Message("getTipoRistorante", new Object[]{ristorante.getId()}));
+            Message res = client.send(new Message("getTipoRistorante", new Object[] { ristorante.getId() }));
             tipi = (List<String>) res.getDati()[0];
-        } catch (ClassNotFoundException | IOException e1) { System.out.println("Errore nel caricare la lista dei tipi...");}        
-       
-        String listaTipi = String.join(", ", tipi); 
+        } catch (ClassNotFoundException | IOException e1) {
+            System.out.println("Errore nel caricare la lista dei tipi...");
+        }
+
+        String listaTipi = String.join(", ", tipi);
 
         if (listaTipi.isEmpty()) {
             listaTipi = "Nessuna cucina specificata";
         }
 
-        Label dettagliLabel = new Label(ristorante.getLuogo().getIndirizzo() + " - " + listaTipi + " - " + ristorante.getFasciaPrezzo() + "€");
+        Label dettagliLabel = new Label(
+                ristorante.getLuogo().getIndirizzo() + " - " + listaTipi + " - " + ristorante.getFasciaPrezzo() + "€");
         dettagliLabel.getStyleClass().add("card-sottotitolo");
-        Label stelleLabel = new Label("⭐ " + (media == 0.0 ? 0 : media) + " (" + numRec + (numRec == 1 ? " recensione)" : " recensioni)"));
+        Label stelleLabel = new Label(
+                "⭐ " + (media == 0.0 ? 0 : media) + " (" + numRec + (numRec == 1 ? " recensione)" : " recensioni)"));
         stelleLabel.getStyleClass().add("card-stelle");
 
         info.getChildren().addAll(nomeLabel, dettagliLabel, stelleLabel);
@@ -357,17 +373,21 @@ public class GUIComponents implements GUIBasics {
                 new RistoranteGUI(stage, client, guest, ristorante, scene).show();
             } else {
                 new RistoranteGUI(stage, client, utente, ristorante, scene).show();
-            } 
+            }
         });
 
         if (!guestHome) {
             Button prefBtn = GUIComponents.blackBtn("❤");
             actions.getChildren().add(prefBtn);
             prefBtn.setOnAction(e -> {
-            try {
-                Message res = client.send(new Message("addPreferiti", new Object[]{utente.getId(), ristorante.getId(), ristorante.getNome()}));
-                alert(Alert.AlertType.INFORMATION, "The Knife", "Ristorante aggiunto!");                
-            } catch (ClassNotFoundException | IOException e1) { System.out.println("Errore nell'aggiungere il preferito..."); alert(Alert.AlertType.ERROR, "Errore", "Impossibile salvare il preferito.");}               
+                try {
+                    Message res = client.send(new Message("addPreferiti",
+                            new Object[] { utente.getId(), ristorante.getId(), ristorante.getNome() }));
+                    alert(Alert.AlertType.INFORMATION, "The Knife", "Ristorante aggiunto!");
+                } catch (ClassNotFoundException | IOException e1) {
+                    System.out.println("Errore nell'aggiungere il preferito...");
+                    alert(Alert.AlertType.ERROR, "Errore", "Impossibile salvare il preferito.");
+                }
             });
         }
 
@@ -378,12 +398,12 @@ public class GUIComponents implements GUIBasics {
     /**
      * Alert utilizzato per notifiche, errori etc..
      *
-     * @param tipo    Tipo di alert {@link Alert.AlertType}.
-     * @param titolo  Titolo dell'alert.
-     * @param testo   Messaggio di informazione, errore etc...
+     * @param tipo   Tipo di alert {@link Alert.AlertType}.
+     * @param titolo Titolo dell'alert.
+     * @param testo  Messaggio di informazione, errore etc...
      * @return {@link Alert} da mostrare.
      */
-    public static Alert alert(Alert.AlertType tipo, String titolo,  String testo) {
+    public static Alert alert(Alert.AlertType tipo, String titolo, String testo) {
         Alert alert = new Alert(tipo);
         alert.setTitle(titolo);
         alert.setHeaderText(null);
@@ -407,17 +427,16 @@ public class GUIComponents implements GUIBasics {
 
         Label distanzaLabel = new Label("30 km");
         distanzaLabel.getStyleClass().add("filter-label");
-        slider.valueProperty().addListener((obs, oldVal, newVal) ->
-            distanzaLabel.setText((int) newVal.doubleValue() + " km")
-        );
+        slider.valueProperty()
+                .addListener((obs, oldVal, newVal) -> distanzaLabel.setText((int) newVal.doubleValue() + " km"));
 
         Label title = new Label("Raggio:");
         title.getStyleClass().add("filter-title");
 
         sliderRef[0] = slider;
         return new VBox(2, title, slider, distanzaLabel);
-    }  
-    
+    }
+
     /**
      * Crea un avatar contenente la lettera iniziale dell'username utente.
      *
@@ -443,7 +462,7 @@ public class GUIComponents implements GUIBasics {
      * @param ruolo     Ruolo.
      * @param username  Username.
      * @param domicilio Domicilio dell'utente.
-     * @return {@link VBox}, profilo utente. 
+     * @return {@link VBox}, profilo utente.
      */
     public static VBox profiloCard(String nome, String ruolo, String username, String domicilio) {
         VBox card = new VBox(14);
@@ -464,7 +483,8 @@ public class GUIComponents implements GUIBasics {
         Separator sep = separator();
         VBox.setMargin(sep, new Insets(4, 0, 4, 0));
 
-        card.getChildren().addAll(avatarBox, nameBox, sep,infoRow("Username", username), infoRow("Domicilio", domicilio));
+        card.getChildren().addAll(avatarBox, nameBox, sep, infoRow("Username", username),
+                infoRow("Domicilio", domicilio));
         return card;
     }
 
@@ -473,7 +493,7 @@ public class GUIComponents implements GUIBasics {
      *
      * @param titolo Titolo del campo.
      * @param testo  Valore associato al campo.
-     * @return {@link HBox} 
+     * @return {@link HBox}
      */
     public static HBox infoRow(String titolo, String testo) {
         Label titoloLabel = new Label(titolo + ": ");
@@ -483,20 +503,23 @@ public class GUIComponents implements GUIBasics {
         HBox row = new HBox(8, titoloLabel, testoLabel);
         row.setAlignment(Pos.CENTER_LEFT);
         return row;
-    }   
-    
+    }
+
     /**
-     * Crea il VBox della sezione preferiti, contenente la lista dei preferiti dell'utente.
+     * Crea il VBox della sezione preferiti, contenente la lista dei preferiti
+     * dell'utente.
      *
      * @param lista        Lista di {@link Ristorante} preferiti.
-     * @param utente       {@link Utente} che sta visualizzando i preferiti. 
+     * @param utente       {@link Utente} che sta visualizzando i preferiti.
      * @param stage
      * @param client       {@link ClientManager} gestore connessione.
      * @param currentScene Scena per "indietro".
-     * @param rimuovi      {@link Runnable} per eseguire refresh della pagina quando si rimuovono preferiti etc...
+     * @param rimuovi      {@link Runnable} per eseguire refresh della pagina quando
+     *                     si rimuovono preferiti etc...
      * @return {@link VBox} formattato per visualizzare i preferiti dell'utente.
      */
-    public static VBox preferiti(List<Ristorante> lista, Utente utente, Stage stage, ClientManager client, Scene currentScene, Runnable rimuovi) {
+    public static VBox preferiti(List<Ristorante> lista, Utente utente, Stage stage, ClientManager client,
+            Scene currentScene, Runnable rimuovi) {
         VBox box = new VBox(16);
         box.setPadding(new Insets(24));
         box.setStyle("-fx-background-color: #1a1a1a;");
@@ -525,7 +548,8 @@ public class GUIComponents implements GUIBasics {
 
     /**
      * Crea una card ristorante per la visualizzazione in liste di gestione
-     * (es. preferiti, miei ristoranti), modificandola dinamicamente in base ai parametri.
+     * (es. preferiti, miei ristoranti), modificandola dinamicamente in base ai
+     * parametri.
      *
      * @param r            Il {@link Ristorante} da visualizzare.
      * @param utente       L'utente {@link Utente}.
@@ -533,11 +557,14 @@ public class GUIComponents implements GUIBasics {
      * @param client       {@link ClientManager} gestore connessione.
      * @param currentScene La scena per eventuali bottoni "indietro".
      * @param rimuovi      {@link Runnable} per il refresh della scena.
-     * @param enableBtns   Boolean per includere il bottone di cancellazione dalla lista preferiti.
-     * @param enableStats  Boolean per abilitare il caricamento delle statistiche (media stelle, numero recensioni) del ristorante.
+     * @param enableBtns   Boolean per includere il bottone di cancellazione dalla
+     *                     lista preferiti.
+     * @param enableStats  Boolean per abilitare il caricamento delle statistiche
+     *                     (media stelle, numero recensioni) del ristorante.
      * @return {@link HBox} formattato.
      */
-    public static HBox card(Ristorante r, Utente utente, Stage stage, ClientManager client, Scene currentScene, Runnable rimuovi, boolean enableBtns, boolean enableStats) {
+    public static HBox card(Ristorante r, Utente utente, Stage stage, ClientManager client, Scene currentScene,
+            Runnable rimuovi, boolean enableBtns, boolean enableStats) {
         HBox card = new HBox(16);
         card.setPadding(new Insets(12, 16, 12, 16));
         card.setAlignment(Pos.CENTER_LEFT);
@@ -548,27 +575,28 @@ public class GUIComponents implements GUIBasics {
 
         Label nomeLabel = new Label(r.getNome());
         nomeLabel.getStyleClass().add("card-titolo");
-        
-        String citta = (r.getLuogo().getIndirizzo() != null) ? r.getLuogo().getIndirizzo() : "Nessun indirizzo trovato.";
+
+        String citta = (r.getLuogo().getIndirizzo() != null) ? r.getLuogo().getIndirizzo()
+                : "Nessun indirizzo trovato.";
         Label dettagliLabel = new Label(citta + " · " + r.getFasciaPrezzo() + "€");
         dettagliLabel.getStyleClass().add("card-sottotitolo");
 
-        if(enableStats) {
+        if (enableStats) {
             Label stats = new Label();
             try {
-                Message res = client.send(new Message("infoRecensioni", new Object[]{r.getId()}));
+                Message res = client.send(new Message("infoRecensioni", new Object[] { r.getId() }));
                 double[] infoRec = (double[]) res.getDati()[0];
                 stats.setText("⭐ " + infoRec[0] + " | " + (int) infoRec[1] + " recensioni");
-            }catch(ClassNotFoundException | IOException exc) {
+            } catch (ClassNotFoundException | IOException exc) {
                 System.out.println("Errore nella rimozione del preferito.");
-                alert(Alert.AlertType.ERROR, "Errore", "Impossibile trovare stats ristorante.");             
+                alert(Alert.AlertType.ERROR, "Errore", "Impossibile trovare stats ristorante.");
             }
             info.getChildren().addAll(nomeLabel, dettagliLabel, stats);
         }
 
-        else { info.getChildren().addAll(nomeLabel, dettagliLabel); }
-
-        
+        else {
+            info.getChildren().addAll(nomeLabel, dettagliLabel);
+        }
 
         HBox actions = new HBox(8);
         actions.setAlignment(Pos.CENTER_RIGHT);
@@ -576,45 +604,48 @@ public class GUIComponents implements GUIBasics {
         Button dettagliBtn = blackBtn("Dettagli");
         dettagliBtn.setOnAction(e -> new RistoranteGUI(stage, client, utente, r, currentScene).show());
 
-        if(enableBtns) {
+        if (enableBtns) {
             Button rimuoviBtn = blackBtn("Rimuovi");
             rimuoviBtn.setOnAction(e -> {
                 try {
-                    client.send(new Message("removePreferiti", new Object[]{utente.getId(), r.getId()}));
+                    client.send(new Message("removePreferiti", new Object[] { utente.getId(), r.getId() }));
                     alert(Alert.AlertType.INFORMATION, "The Knife", "Ristorante rimosso dai preferiti.");
                     rimuovi.run();
                 } catch (ClassNotFoundException | IOException ex) {
                     System.out.println("Errore nella rimozione del preferito.");
                     alert(Alert.AlertType.ERROR, "Errore", "Impossibile rimuovere il ristorante.");
                 }
-        });
+            });
             actions.getChildren().addAll(dettagliBtn, rimuoviBtn);
 
         }
 
-        else if(enableStats) {
+        else if (enableStats) {
             Button deleteBtn = greenBtn("Elimina");
-            deleteBtn.setOnAction(e ->{
+            deleteBtn.setOnAction(e -> {
                 try {
-                     System.out.println("DEBUG CLIENT: Cliccato elimina su ristorante: " + r.getNome() + " con ID: " + r.getId());                    
-                    Message res = client.send(new Message("deleteRistorante", new Object[]{r.getId()}));
+                    System.out.println(
+                            "DEBUG CLIENT: Cliccato elimina su ristorante: " + r.getNome() + " con ID: " + r.getId());
+                    Message res = client.send(new Message("deleteRistorante", new Object[] { r.getId() }));
                     alert(Alert.AlertType.INFORMATION, "The Knife", "Ristorante eliminato con successo.");
-                    rimuovi.run();                    
-                }catch(ClassNotFoundException | IOException exce) {
+                    rimuovi.run();
+                } catch (ClassNotFoundException | IOException exce) {
                     System.out.println("Errore nella rimozione del ristorante.");
-                    alert(Alert.AlertType.ERROR, "Errore", "Impossibile rimuovere il ristorante."); 
+                    alert(Alert.AlertType.ERROR, "Errore", "Impossibile rimuovere il ristorante.");
                 }
             });
-            actions.getChildren().addAll(dettagliBtn, deleteBtn);             
+            actions.getChildren().addAll(dettagliBtn, deleteBtn);
+        } else {
+            actions.getChildren().addAll(dettagliBtn);
         }
-        else {actions.getChildren().addAll(dettagliBtn);}
 
         card.getChildren().addAll(info, actions);
         return card;
-    }   
+    }
 
     /**
-     * VBox contenente le informazioni di un ristorante come indirizzo, prezzo medio etc..
+     * VBox contenente le informazioni di un ristorante come indirizzo, prezzo medio
+     * etc..
      *
      * @param ristorante {@link Ristorante} da utilizzare.
      * @return {@link VBox} formattato per la visualizzazione dei dettagli.
@@ -623,16 +654,22 @@ public class GUIComponents implements GUIBasics {
         VBox card = new VBox(10);
         card.setPadding(new Insets(16));
         card.getStyleClass().add("info-card");
-        card.getChildren().addAll(infoRow("Indirizzo", ristorante.getLuogo().getIndirizzo()), infoRow("Prezzo medio", ristorante.getFasciaPrezzo() + "€"), infoRow("Delivery", ristorante.isDelivery() ? "✅ Effettuato" : "❌ Non effettuato"), infoRow("Prenotazione", ristorante.isPrenotazioneOnline() ? "✅ Disponibile" : "❌ Non disponibile"));
+        card.getChildren().addAll(infoRow("Indirizzo", ristorante.getLuogo().getIndirizzo()),
+                infoRow("Prezzo medio", ristorante.getFasciaPrezzo() + "€"),
+                infoRow("Delivery", ristorante.isDelivery() ? "✅ Effettuato" : "❌ Non effettuato"),
+                infoRow("Prenotazione", ristorante.isPrenotazioneOnline() ? "✅ Disponibile" : "❌ Non disponibile"));
         return card;
     }
 
     /**
-     * Crea il box dedicato alle recensioni da usare nella visualizzazione dei dettagli di un ristorante.
-     * Abilita o disabilita dinamicamente pulsanti etc... sulla base dei parametri passati.
+     * Crea il box dedicato alle recensioni da usare nella visualizzazione dei
+     * dettagli di un ristorante.
+     * Abilita o disabilita dinamicamente pulsanti etc... sulla base dei parametri
+     * passati.
      *
      * @param rec       {@link Recensione}.
-     * @param isOwner   Indica se l'utente loggato e' il proprietario o meno del ristorante.
+     * @param isOwner   Indica se l'utente loggato e' il proprietario o meno del
+     *                  ristorante.
      * @param guestHome Indica se l'accesso e' stato effettuato come guest.
      * @param utente    {@link Utente} loggato.
      * @param client    {@link ClientManager} gestore connessione.
@@ -641,17 +678,18 @@ public class GUIComponents implements GUIBasics {
      * @throws ClassNotFoundException Fallisce la deserializzazione.
      * @throws IOException            Errore I/O.
      */
-    public static VBox recensioneBox(Recensione rec, boolean isOwner, boolean guestHome, Utente utente, ClientManager client, Runnable ricarica) throws ClassNotFoundException, IOException {
+    public static VBox recensioneBox(Recensione rec, boolean isOwner, boolean guestHome, Utente utente,
+            ClientManager client, Runnable ricarica) throws ClassNotFoundException, IOException {
         VBox card = new VBox(8);
         card.setPadding(new Insets(12, 16, 12, 16));
         card.getStyleClass().add("recensione-box");
 
         Utente recensore = null;
-        
-        Message res = client.send(new Message("getUtenteFromId", new Object[]{rec.getIdRecensore()}));
+
+        Message res = client.send(new Message("getUtenteFromId", new Object[] { rec.getIdRecensore() }));
         recensore = (Utente) res.getDati()[0];
 
-        Label autoreLabel = recensore == null ? new Label("Anonimo") : new Label("Utente: " + recensore.getUsername()) ;
+        Label autoreLabel = recensore == null ? new Label("Anonimo") : new Label("Utente: " + recensore.getUsername());
         autoreLabel.getStyleClass().add("recensione-autore");
         Label stelleLabel = new Label("⭐" + rec.getStelle() + " stelle");
 
@@ -685,9 +723,10 @@ public class GUIComponents implements GUIBasics {
             Button rispondiBtn = greenBtn("Rispondi");
             rispondiBtn.setOnAction(e -> {
                 String testo = rispostaField.getText().trim();
-                if (testo.isEmpty()) return;
+                if (testo.isEmpty())
+                    return;
                 try {
-                    client.send(new Message("rispondiRecensione", new Object[]{rec.getId(), testo}));
+                    client.send(new Message("rispondiRecensione", new Object[] { rec.getId(), testo }));
                     alert(AlertType.INFORMATION, "The Knife", "Risposta aggiunta con successo.");
                     ricarica.run();
                 } catch (ClassNotFoundException | IOException ex) {
@@ -698,19 +737,19 @@ public class GUIComponents implements GUIBasics {
             card.getChildren().addAll(rispostaField, rispondiBtn);
         }
 
-        if(isOwner && rec.getRisposta() != null) {
+        if (isOwner && rec.getRisposta() != null) {
             Button eliminaBtn = greenBtn("Elimina risposta");
             eliminaBtn.setOnAction(e -> {
                 try {
-                    client.send(new Message("eliminaRisposta", new Object[]{rec.getId()}));
+                    client.send(new Message("eliminaRisposta", new Object[] { rec.getId() }));
                     alert(AlertType.INFORMATION, "The Knife", "Risposta eliminata con successo.");
                     ricarica.run();
                 } catch (ClassNotFoundException | IOException ex) {
                     System.out.println("Errore nell'eliminare la risposta.");
                     alert(AlertType.ERROR, "Errore", "Impossibile eliminare la risposta. Riprova.");
 
-                }                
-            });            
+                }
+            });
             card.getChildren().addAll(eliminaBtn);
         }
 
@@ -718,7 +757,7 @@ public class GUIComponents implements GUIBasics {
             Button eliminaBtn = blackBtn("Elimina");
             eliminaBtn.setOnAction(e -> {
                 try {
-                    client.send(new Message("removeRecensione", new Object[]{rec.getId()}));
+                    client.send(new Message("removeRecensione", new Object[] { rec.getId() }));
                     ricarica.run();
                     alert(AlertType.INFORMATION, "The Knife", "Recensione eliminata con successo.");
                 } catch (ClassNotFoundException | IOException ex) {
@@ -728,8 +767,8 @@ public class GUIComponents implements GUIBasics {
             });
             TextField modificaField = field("Nuovo testo recensione...");
             modificaField.setVisible(false);
-            modificaField.setManaged(false);  
-            
+            modificaField.setManaged(false);
+
             Button modificaBtn = blackBtn("Modifica");
             modificaBtn.setOnAction(e -> {
                 if (!modificaField.isVisible()) {
@@ -739,17 +778,18 @@ public class GUIComponents implements GUIBasics {
                     modificaBtn.setText("Conferma");
                 } else {
                     String nuovoTesto = modificaField.getText().trim();
-                    if (nuovoTesto.isEmpty()) return;
+                    if (nuovoTesto.isEmpty())
+                        return;
                     try {
-                        client.send(new Message("modifyRecensione", new Object[]{rec.getId(), nuovoTesto}));
+                        client.send(new Message("modifyRecensione", new Object[] { rec.getId(), nuovoTesto }));
                         alert(AlertType.INFORMATION, "The Knife", "Recensione modificata con successo.");
                         ricarica.run();
                     } catch (ClassNotFoundException | IOException ex) {
                         alert(AlertType.ERROR, "Recensione", "Impossibile modificare la recensione.");
                     }
                 }
-            });            
-            
+            });
+
             card.getChildren().addAll(eliminaBtn, modificaField, modificaBtn);
         }
         return card;
@@ -761,7 +801,8 @@ public class GUIComponents implements GUIBasics {
      * @param ristorante {@link Ristorante} che si sta recensendo.
      * @param utente     {@link Utente} che sta recensendo il ristorante.
      * @param client     {@link ClientManager} gestore connessione.
-     * @param refresh      {@link Runnable} per il refresh (dopo inserimento recensione).
+     * @param refresh    {@link Runnable} per il refresh (dopo inserimento
+     *                   recensione).
      * @return {@link VBox} il form per la recensione.
      */
     public static VBox formRecensione(Ristorante ristorante, Utente utente, ClientManager client, Runnable refresh) {
@@ -773,7 +814,7 @@ public class GUIComponents implements GUIBasics {
         formTitle.getStyleClass().add("form-titolo");
 
         ComboBox<Integer> stelle = new ComboBox<>();
-        stelle.getItems().addAll(1,2,3,4,5);
+        stelle.getItems().addAll(1, 2, 3, 4, 5);
         stelle.setPromptText("⭐ Stelle");
         stelle.setMaxWidth(Double.MAX_VALUE);
 
@@ -790,7 +831,9 @@ public class GUIComponents implements GUIBasics {
                 return;
             }
             try {
-                Message res = client.send(new Message("addRecensione", new Object[]{new Recensione(0, utente.getId(), ristorante.getId(), testoField.getText().trim(), stelle.getValue(), new java.util.Date(), null)}));                   
+                Message res = client.send(new Message("addRecensione",
+                        new Object[] { new Recensione(0, utente.getId(), ristorante.getId(),
+                                testoField.getText().trim(), stelle.getValue(), new java.util.Date(), null) }));
                 if (res.getOp().equals("OK")) {
                     stelle.setValue(null);
                     testoField.clear();
@@ -799,7 +842,8 @@ public class GUIComponents implements GUIBasics {
                     alert(AlertType.INFORMATION, "The Knife", "Recensione aggiunta con successo.");
                 } else {
                     showError(err, "Hai già recensito questo ristorante.");
-                    alert(AlertType.ERROR, "Recensione", "Aggiunta recensione fallita... Hai gia' scritto una recensione per questo ristorante!");
+                    alert(AlertType.ERROR, "Recensione",
+                            "Aggiunta recensione fallita... Hai gia' scritto una recensione per questo ristorante!");
                 }
             } catch (ClassNotFoundException | IOException ex) {
                 showError(err, "Errore nell'inviare la recensione.");
@@ -810,8 +854,8 @@ public class GUIComponents implements GUIBasics {
 
         form.getChildren().addAll(formTitle, stelle, testoField, err, inviaBtn);
         return form;
-    }   
-    
+    }
+
     /**
      * Vbox per la sezione "I miei ristoranti"
      *
@@ -823,7 +867,8 @@ public class GUIComponents implements GUIBasics {
      * @param rimuovi      {@link Runnable} per il refresh.
      * @return {@link VBox} contenente l'elenco dei ristoranti del proprietario.
      */
-    public static VBox mieiRistoranti(List<Ristorante> lista, Utente utente, Stage stage, ClientManager client, Scene currentScene, Runnable rimuovi) {
+    public static VBox mieiRistoranti(List<Ristorante> lista, Utente utente, Stage stage, ClientManager client,
+            Scene currentScene, Runnable rimuovi) {
         VBox box = new VBox(16);
         box.setPadding(new Insets(24));
         box.setStyle("-fx-background-color: #1a1a1a;");
@@ -839,7 +884,7 @@ public class GUIComponents implements GUIBasics {
             boxRistoranti.getChildren().add(empty);
         } else {
             for (Ristorante ris : lista) {
-                HBox card = card(ris, utente, stage, client, currentScene, rimuovi,false, true);
+                HBox card = card(ris, utente, stage, client, currentScene, rimuovi, false, true);
                 boxRistoranti.getChildren().add(card);
             }
         }
@@ -849,7 +894,7 @@ public class GUIComponents implements GUIBasics {
         box.getChildren().addAll(titolo, scroll);
         return box;
     }
-    
+
     /**
      * VBox per la sezione "Le mie recensioni".
      *
@@ -861,7 +906,8 @@ public class GUIComponents implements GUIBasics {
      * @param aggiorna   {@link Runnable} per il refresh.
      * @return {@link VBox} formattato contenente le recensioni dell'utente.
      */
-    public static VBox mieRecensioni(List<Recensione> lista, List<Ristorante> ristoranti, Utente utente, Stage stage, ClientManager client, Runnable aggiorna) {
+    public static VBox mieRecensioni(List<Recensione> lista, List<Ristorante> ristoranti, Utente utente, Stage stage,
+            ClientManager client, Runnable aggiorna) {
         VBox box = new VBox(16);
         box.setPadding(new Insets(24));
         box.setStyle("-fx-background-color: #1a1a1a;");
@@ -900,7 +946,8 @@ public class GUIComponents implements GUIBasics {
      * @param aggiorna {@link Runnable} per il refresh.
      * @return {@link VBox} formattato.
      */
-    public static VBox miaRecensioneCard(Recensione rec, Ristorante ris, Utente utente, Stage stage, ClientManager client, Runnable aggiorna) {
+    public static VBox miaRecensioneCard(Recensione rec, Ristorante ris, Utente utente, Stage stage,
+            ClientManager client, Runnable aggiorna) {
         VBox card = new VBox(8);
         card.setPadding(new Insets(12, 16, 12, 16));
         card.getStyleClass().add("recensione-box");
@@ -944,7 +991,7 @@ public class GUIComponents implements GUIBasics {
         Button eliminaBtn = blackBtn("Elimina");
         eliminaBtn.setOnAction(e -> {
             try {
-                client.send(new Message("removeRecensione", new Object[]{rec.getId()}));
+                client.send(new Message("removeRecensione", new Object[] { rec.getId() }));
                 alert(Alert.AlertType.INFORMATION, "The Knife", "Recensione eliminata con successo.");
                 aggiorna.run();
             } catch (ClassNotFoundException | IOException ex) {
@@ -952,33 +999,35 @@ public class GUIComponents implements GUIBasics {
             }
         });
 
-            TextField modificaField = field("Nuovo testo recensione...");
-            modificaField.setVisible(false);
-            modificaField.setManaged(false);  
-            
-            Button modificaBtn = blackBtn("Modifica");
-            modificaBtn.setOnAction(e -> {
-                if (!modificaField.isVisible()) {
-                    modificaField.setVisible(true);
-                    modificaField.setManaged(true);
-                    modificaField.setText(rec.getTesto());
-                    modificaBtn.setText("Conferma");
-                } else {
-                    String nuovoTesto = modificaField.getText().trim();
-                    if (nuovoTesto.isEmpty()) return;
-                    try {
-                        client.send(new Message("modifyRecensione", new Object[]{rec.getId(), nuovoTesto}));
-                        alert(AlertType.INFORMATION, "The Knife", "Recensione modificata con successo.");
-                        aggiorna.run();
-                    } catch (ClassNotFoundException | IOException ex) {
-                        alert(AlertType.ERROR, "Recensione", "Impossibile modificare la recensione.");
-                    }
-                }});        
+        TextField modificaField = field("Nuovo testo recensione...");
+        modificaField.setVisible(false);
+        modificaField.setManaged(false);
+
+        Button modificaBtn = blackBtn("Modifica");
+        modificaBtn.setOnAction(e -> {
+            if (!modificaField.isVisible()) {
+                modificaField.setVisible(true);
+                modificaField.setManaged(true);
+                modificaField.setText(rec.getTesto());
+                modificaBtn.setText("Conferma");
+            } else {
+                String nuovoTesto = modificaField.getText().trim();
+                if (nuovoTesto.isEmpty())
+                    return;
+                try {
+                    client.send(new Message("modifyRecensione", new Object[] { rec.getId(), nuovoTesto }));
+                    alert(AlertType.INFORMATION, "The Knife", "Recensione modificata con successo.");
+                    aggiorna.run();
+                } catch (ClassNotFoundException | IOException ex) {
+                    alert(AlertType.ERROR, "Recensione", "Impossibile modificare la recensione.");
+                }
+            }
+        });
 
         actions.getChildren().addAll(dettagliBtn, modificaField, modificaBtn, eliminaBtn);
         card.getChildren().add(actions);
         return card;
-    }    
+    }
 
     /**
      * Viene usato per la creazione di scene.
@@ -992,5 +1041,5 @@ public class GUIComponents implements GUIBasics {
         Scene scene = new Scene(container);
         scene.getStylesheets().add(GUIComponents.class.getResource("/style.css").toExternalForm());
         return scene;
-    }    
+    }
 }
